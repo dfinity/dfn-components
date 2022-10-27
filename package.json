@@ -1,10 +1,10 @@
 {
-  "name": "my-turborepo",
+  "name": "@dfinity/dfn-components",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/docs",
+    "packages/ii-login-button"
   ],
   "scripts": {
     "build": "turbo run build",
