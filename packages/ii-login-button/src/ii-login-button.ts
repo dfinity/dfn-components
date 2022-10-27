@@ -3,7 +3,14 @@ import { AuthClient, AuthClientCreateOptions, AuthClientLoginOptions } from '@df
 import { Principal } from '@dfinity/principal';
 import { AccountIdentifier } from '@dfinity/nns';
 import { LoginButton } from './login-button';
-import { AuthClientStorage } from '@dfinity/auth-client';
+
+interface AuthClientStorage {
+  get(key: string): Promise<string | null>;
+
+  set(key: string, value: string): Promise<void>;
+
+  remove(key: string): Promise<void>;
+}
 
 class LoginEvent extends Event {}
 class ReadyEvent extends Event {}
