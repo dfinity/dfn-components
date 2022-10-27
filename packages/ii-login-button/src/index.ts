@@ -1,1 +1,1 @@
-export { IILoginButton } from './ii-login-button';
+export * as IILoginButton from "./ii-login-button";

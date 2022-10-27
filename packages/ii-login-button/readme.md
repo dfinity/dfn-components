@@ -1,15 +1,13 @@
-# @dfinity/ui - a WebComponents library
+# @dfinity/IILoginButton
 
-This repository contains standardized web components you can drop into your Internet Computer frontend for convenience.
-
-To install, run `npm install @dfinity/ui`
+To install, run `npm install @dfinity/ii-login-button`
 
 ## IILoginButton
 
 Implements a standardized login button for Internet Identity
 
 ```js
-import { IILoginButton } from '@dfinity/ui';
+import IILoginButton from '@dfinity/ii-login-button';
 ```
 
 in your application
