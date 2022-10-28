@@ -76,12 +76,6 @@ export class LoginButton extends HTMLElement {
         ).innerText = newVal as string;
         break;
       }
-      case "innerstyle": {
-        this.shadowRoot
-          ?.querySelector("button")
-          ?.setAttribute("style", newVal as string);
-        break;
-      }
       default: {
         console.log("unhandled attribute change", attrName, oldVal, newVal);
         break;
@@ -90,7 +84,7 @@ export class LoginButton extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["onSuccess", "label", "disabled", "innerstyle"];
+    return ["onSuccess", "label", "disabled"];
   }
 
   login(): void {
