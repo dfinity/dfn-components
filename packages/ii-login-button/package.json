@@ -2,8 +2,8 @@
   "name": "@dfinity/ii-login-button",
   "version": "0.0.2",
   "description": "Web component library to drop into your applications",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "dist/src/index.js",
+  "module": "dist/src/index.js",
   "scripts": {
     "build": "tsc --target esnext",
     "test": "echo \"Error: no test specified\" && exit 1"

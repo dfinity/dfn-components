@@ -123,12 +123,12 @@ class IILoginButton extends LoginButton {
     const label = this.getAttribute("label") ?? "Login With Internet Identity";
     if (logoRight) {
       newButton.innerHTML = `
-          <span slot="label">${label}</span>
-          <span slot="logo">${iiLogo}</span>`;
+          <span id="label">${label}</span>
+          <span id="logo">${iiLogo}</span>`;
     } else {
       newButton.innerHTML = `
-        <span slot="logo">${iiLogo}</span>
-        <span slot="label">${label}</span>`;
+        <span id="logo">${iiLogo}</span>
+        <span id="label">${label}</span>`;
     }
 
     if (oldButton) {

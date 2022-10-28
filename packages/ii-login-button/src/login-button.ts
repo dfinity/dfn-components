@@ -41,7 +41,7 @@ export class LoginButton extends HTMLElement {
   button:active, button:target {
     background: rgb(245, 245, 245);
   }
-  span[slot=logo] {
+  span#logo {
     display: flex;
     justify-items: center;
     align-items: center;
@@ -70,9 +70,7 @@ export class LoginButton extends HTMLElement {
       }
       case "label": {
         (
-          this.shadowRoot?.querySelector(
-            'slot[name="label"]'
-          ) as HTMLSpanElement
+          this.shadowRoot?.querySelector("#label") as HTMLSpanElement
         ).innerText = newVal as string;
         break;
       }
