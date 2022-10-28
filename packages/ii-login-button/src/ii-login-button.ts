@@ -139,36 +139,6 @@ class IILoginButton extends LoginButton {
     newButton.addEventListener("click", login);
   }
 
-  attributeChangedCallback(attrName: string, oldVal: unknown, newVal: unknown) {
-    const button = this.shadowRoot?.getElementById(
-      "ii-login-button"
-    ) as HTMLButtonElement;
-    switch (attrName) {
-      case "disabled": {
-        button.disabled = newVal === "true";
-        break;
-      }
-      case "label": {
-        (
-          button.querySelector("#ii-login-button-label") as HTMLSpanElement
-        ).innerText = newVal as string;
-        break;
-      }
-      case "innerstyle": {
-        button.setAttribute("style", newVal as string);
-        break;
-      }
-      default: {
-        console.log("unhandled attribute change", attrName, oldVal, newVal);
-        break;
-      }
-    }
-  }
-
-  static get observedAttributes() {
-    return ["onSuccess", "label", "disabled", "innerstyle"];
-  }
-
   /**
    * @returns the internal {@link AuthClient} used in the component
    */
