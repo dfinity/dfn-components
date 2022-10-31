@@ -89,9 +89,14 @@ export class LoginButton extends HTMLElement {
         break;
       }
       case "label": {
-        (
-          this.shadowRoot?.querySelector("#label") as HTMLSpanElement
-        ).innerText = newVal as string;
+        const label = this.shadowRoot?.querySelector("#label") as
+          | HTMLSpanElement
+          | undefined;
+
+        if (label) {
+          label.innerText = newVal as string;
+        }
+
         break;
       }
       default: {
