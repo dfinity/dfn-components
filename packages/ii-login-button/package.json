@@ -1,0 +1,45 @@
+{
+  "name": "@dfinity/ii-login-button",
+  "version": "0.0.2",
+  "description": "Web component library to drop into your applications",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "scripts": {
+    "build": "tsc --target esnext",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "internet computer",
+    "internet-computer",
+    "ic",
+    "dfinity",
+    "II",
+    "Internet Identity",
+    "javascript",
+    "typescript",
+    "blockchain",
+    "crypto",
+    "distributed",
+    "component",
+    "library",
+    "web component"
+  ],
+  "author": "DFINITY Stiftung <sdk@dfinity.org>",
+  "dependencies": {
+    "assert": "^2.0.0",
+    "bip39": "^3.0.4",
+    "bs58check": "^2.1.2"
+  },
+  "peerDependencies": {
+    "@dfinity/agent": "0.x",
+    "@dfinity/auth-client": "0.x",
+    "@dfinity/authentication": "0.x",
+    "@dfinity/candid": "0.x",
+    "@dfinity/identity": "0.x",
+    "@dfinity/nns": "^0.8.1",
+    "@dfinity/principal": "0.x"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  }
+}
