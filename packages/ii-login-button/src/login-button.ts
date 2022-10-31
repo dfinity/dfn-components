@@ -61,11 +61,16 @@ export class LoginButton extends HTMLElement {
   }
 
   attributeChangedCallback(attrName: string, oldVal: unknown, newVal: unknown) {
+    const button = this.shadowRoot?.querySelector(
+      "button"
+    ) as HTMLButtonElement;
     switch (attrName) {
       case "disabled": {
-        (
-          this.shadowRoot?.querySelector("button") as HTMLButtonElement
-        ).disabled = newVal === "true";
+        if (newVal) {
+          button.setAttribute("disabled", "true");
+        } else {
+          button.removeAttribute("disabled");
+        }
         break;
       }
       case "label": {
