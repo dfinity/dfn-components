@@ -1,1 +1,2 @@
-export * as IILoginButton from "./ii-login-button";
+import IILoginButton from "./ii-login-button";
+export default IILoginButton;
