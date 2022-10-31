@@ -6,6 +6,8 @@
     "apps/docs",
     "packages/ii-login-button"
   ],
+  "author": "DFINITY Stiftung <sdk@dfinity.org>",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
