@@ -1,8 +1,12 @@
-import { Identity } from '@dfinity/agent';
-import { AuthClient, AuthClientCreateOptions, AuthClientLoginOptions } from '@dfinity/auth-client';
-import { Principal } from '@dfinity/principal';
-import { AccountIdentifier } from '@dfinity/nns';
-import { LoginButton } from './login-button';
+import { Identity } from "@dfinity/agent";
+import {
+  AuthClient,
+  AuthClientCreateOptions,
+  AuthClientLoginOptions,
+} from "@dfinity/auth-client";
+import { Principal } from "@dfinity/principal";
+import { AccountIdentifier } from "@dfinity/nns";
+import { LoginButton } from "./login-button";
 
 interface AuthClientStorage {
   get(key: string): Promise<string | null>;
@@ -74,7 +78,6 @@ class IILoginButton extends LoginButton {
     };
 
     this.init();
-    this.render();
   }
 
   private init() {
@@ -91,6 +94,7 @@ class IILoginButton extends LoginButton {
           const event = new ReadyEvent("ready");
           this.dispatchEvent(event);
           this.setState({ ready: true });
+          this.render();
         }
       })
       .catch((error) => {
@@ -114,22 +118,23 @@ class IILoginButton extends LoginButton {
   }
 
   private render() {
+    if (!this._state.ready) return;
     const shadowRoot = this.shadowRoot as ShadowRoot;
     const oldButton = shadowRoot.querySelector("button");
     const newButton = document.createElement("button");
     newButton.id = "ii-login-button";
 
-    const logoRight = this.hasAttribute("logo-right");
     const label = this.getAttribute("label") ?? "Login With Internet Identity";
-    if (logoRight) {
-      newButton.innerHTML = `
-          <span id="label">${label}</span>
-          <span id="logo">${iiLogo}</span>`;
-    } else {
-      newButton.innerHTML = `
-        <span id="logo">${iiLogo}</span>
-        <span id="label">${label}</span>`;
-    }
+    console.log(this.isAuthenticated);
+    newButton.setAttribute(
+      "aria-label",
+      `${label}. You are currently ${
+        this.isAuthenticated ? "" : "not"
+      } logged in.`
+    );
+    newButton.innerHTML = `
+    <span id="logo" role="presentation">${iiLogo}</span>
+    <span id="label">${label}</span>`;
 
     if (oldButton) {
       shadowRoot.removeChild(oldButton);
@@ -210,6 +215,7 @@ class IILoginButton extends LoginButton {
     });
     const event = new LoginEvent("login", { bubbles: true, composed: true });
     this._state.loginOptions?.onSuccess?.();
+    this.render();
     this.dispatchEvent(event);
   }
 
@@ -222,6 +228,7 @@ class IILoginButton extends LoginButton {
       identity: undefined,
     });
     this.authClient.logout();
+    this.render();
   }
 
   /**
