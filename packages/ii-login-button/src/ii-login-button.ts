@@ -123,6 +123,7 @@ class IILoginButton extends LoginButton {
     const oldButton = shadowRoot.querySelector("button");
     const newButton = document.createElement("button");
     newButton.id = "ii-login-button";
+    newButton.setAttribute("type", "button");
 
     const label = this.getAttribute("label") ?? "Login With Internet Identity";
     console.log(this.isAuthenticated);

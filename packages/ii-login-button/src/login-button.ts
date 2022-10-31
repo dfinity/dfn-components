@@ -4,18 +4,13 @@ export class LoginButton extends HTMLElement {
     this.attachShadow({ mode: "open" });
 
     // internal styles
-    const style = document.createElement("style");
+    const styleSheet = document.createElement("style");
 
-    const columns = this.hasAttribute("logo-right")
-      ? `grid-template-columns: auto 36px;`
-      : `grid-template-columns: 36px auto;`;
-    style.textContent = `
+    styleSheet.textContent = `
   button {
     box-sizing: border-box;
-    display: grid;
+    display: flex;
     background: white;
-    align-items: center;
-    ${columns}
     width: 100%;
     max-width: 400px;
     cursor: pointer;
@@ -46,13 +41,19 @@ export class LoginButton extends HTMLElement {
     justify-items: center;
     align-items: center;
   }
+  span#label {
+    width: 100%;
+  }
   svg {
     min-width: 24px;
     max-width: 36px;
     height: 24px;
   }
 `;
-    this.shadowRoot?.append(style);
+    if (this.hasAttribute("logo-right")) {
+      styleSheet.sheet?.insertRule("button {flex-direction: row-reverse}", 0);
+    }
+    this.shadowRoot?.append(styleSheet);
   }
 
   connectedCallback() {
@@ -64,12 +65,26 @@ export class LoginButton extends HTMLElement {
     const button = this.shadowRoot?.querySelector(
       "button"
     ) as HTMLButtonElement;
+    const styleSheet = this.shadowRoot?.querySelector(
+      "style"
+    ) as HTMLStyleElement;
     switch (attrName) {
       case "disabled": {
-        if (newVal) {
+        if (typeof newVal === "string") {
           button.setAttribute("disabled", "true");
         } else {
           button.removeAttribute("disabled");
+        }
+        break;
+      }
+      case "logo-right": {
+        if (typeof newVal === "string") {
+          styleSheet.sheet?.insertRule(
+            "button {flex-direction: row-reverse}",
+            0
+          );
+        } else {
+          styleSheet.sheet?.deleteRule(0);
         }
         break;
       }
@@ -87,7 +102,7 @@ export class LoginButton extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["onSuccess", "label", "disabled"];
+    return ["onSuccess", "label", "disabled", "logo-right"];
   }
 
   login(): void {
