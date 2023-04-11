@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "apps/docs",
-    "packages/ii-login-button"
+    "packages/ii-login-button",
+    "packages/candid-ui"
   ],
   "author": "DFINITY Stiftung <sdk@dfinity.org>",
   "license": "Apache-2.0",

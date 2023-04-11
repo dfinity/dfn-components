@@ -1,0 +1,25 @@
+type complexArg = 
+ record {
+   array: opt vec text;
+   "bool": opt bool;
+   number: opt int;
+   "text": opt text;
+   "variant": opt variant {
+                    a: text;
+                    b: int;
+                  };
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: bool;
+ };
+service : {
+  "bool": (bool) -> (bool) query;
+  "int": (int) -> (int) query;
+  kitchenSink: (complexArg) -> (Result);
+  "nat": (nat) -> (nat) query;
+  "principal": (principal) -> (principal) query;
+  "text": (text) -> (text) query;
+  whoami: () -> (principal) query;
+}

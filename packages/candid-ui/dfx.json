@@ -1,0 +1,14 @@
+{
+  "canisters": {
+    "kitchen_sink": {
+      "type": "motoko",
+      "main": "src/kitchen-sink/main.mo"
+    },
+    "demo": {
+      "type": "assets",
+      "source": [
+        "demo"
+      ]
+    }
+  }
+}
