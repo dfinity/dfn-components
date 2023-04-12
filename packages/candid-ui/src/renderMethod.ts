@@ -3,6 +3,7 @@ import { IDL } from '@dfinity/candid';
 import { InputBox } from './candid-core';
 import { renderInput, renderValue } from './candid-ui';
 import { Principal } from '@dfinity/principal';
+import { stringify } from "./utils";
 
 const names: Record<number, string> = {};
 
@@ -116,10 +117,10 @@ export function renderMethod(
 
     const tStart = Date.now();
 
-    const requestEvent = new CustomEvent('request', {
+    const requestEvent = new CustomEvent("request", {
       detail: {
         method: name,
-        args: JSON.parse(JSON.stringify(args)),
+        args: JSON.parse(stringify(args)),
       },
       bubbles: true,
       composed: true,
@@ -128,10 +129,10 @@ export function renderMethod(
 
     const result = await canister[name](...args);
 
-    const repsponseEvent = new CustomEvent('response', {
+    const repsponseEvent = new CustomEvent("response", {
       detail: {
         method: name,
-        response: JSON.parse(JSON.stringify(result)),
+        response: JSON.parse(stringify(result)),
       },
       bubbles: true,
       composed: true,
@@ -207,9 +208,7 @@ export function renderMethod(
       containers.push(jsonContainer);
       jsonContainer.style.display = setContainerVisibility('json');
       left.appendChild(jsonContainer);
-      jsonContainer.innerText = JSON.stringify(callResult, (k, v) =>
-        typeof v === 'bigint' ? v.toString() : v,
-      );
+      jsonContainer.innerText = stringify(callResult);
     })().catch(err => {
       resultDiv.classList.add('error');
       left.innerText = err.message;
@@ -367,5 +366,8 @@ function postToPlayground(id: Principal) {
   const message = {
     caller: id.toText(),
   };
-  (window.parent || window.opener)?.postMessage(`CandidUI${JSON.stringify(message)}`, '*');
+  (window.parent || window.opener)?.postMessage(
+    `CandidUI${stringify(message)}`,
+    "*"
+  );
 }

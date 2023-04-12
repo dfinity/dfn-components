@@ -13,7 +13,7 @@ import { Principal } from '@dfinity/principal';
 import { log, renderMethod } from './renderMethod';
 import { IdbNetworkIds } from './db';
 import { styles } from './styles';
-import { html } from './utils';
+import { html, stringify } from './utils';
 import type { CanisterIdInput } from './CanisterIdInput';
 
 if (!('global' in window)) {
@@ -460,7 +460,7 @@ export class CandidUI extends HTMLElement {
 
     if (!this.#canisterId) return;
     let candid = await this.#db?.get(
-      JSON.stringify({ id: this.#canisterId.toText(), network: this.#host }),
+      stringify({ id: this.#canisterId.toText(), network: this.#host }),
     );
 
     //   fetch the candid file
@@ -484,7 +484,7 @@ export class CandidUI extends HTMLElement {
       //   save candid file to db
       if (this.#db) {
         this.#db.set(
-          JSON.stringify({ id: this.#canisterId.toText(), network: this.#host }),
+          stringify({ id: this.#canisterId.toText(), network: this.#host }),
           candid,
         );
       }

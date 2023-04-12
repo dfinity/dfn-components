@@ -42,3 +42,6 @@ export function css(strings: TemplateStringsArray, ...values: unknown[]) {
   }
   return result;
 }
+
+export const stringify = (x: unknown) =>
+  JSON.stringify(x, (_, v) => (typeof v === "bigint" ? v.toString() : v));
