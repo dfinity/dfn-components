@@ -3,17 +3,16 @@ const __dirname = import.meta.url.substring(7, import.meta.url.lastIndexOf('/'))
 
 export default {
   experiments: { outputModule: true },
-  mode: 'production',
+  mode: "production",
   entry: {
-    auto: './src/auto.ts',
-    index: './src/index.ts',
+    auto: "./src/auto.ts",
   },
 
   output: {
-    filename: '[name].js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: "[name].js",
+    path: path.resolve(__dirname, "dist"),
     library: {
-      type: 'window',
+      type: "window",
     },
     clean: true,
     environment: {
@@ -25,22 +24,22 @@ export default {
       {
         //test for ts and js files
         test: /\.ts$/,
-        use: 'ts-loader',
+        use: "ts-loader",
         exclude: /node_modules/,
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: ["style-loader", "css-loader"],
       },
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: [".ts", ".js"],
   },
   optimization: {
     minimize: true,
-    moduleIds: 'deterministic',
-    chunkIds: 'deterministic',
+    moduleIds: "deterministic",
+    chunkIds: "deterministic",
     usedExports: true,
   },
 };
