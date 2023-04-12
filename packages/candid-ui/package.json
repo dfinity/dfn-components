@@ -1,22 +1,21 @@
 {
   "name": "@dfinity/candid-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This package provides a simple UI for the Candid Interface Declaration Language. It is a simple web application that can be used to explore Candid interfaces, and to generate calls to canisters using them.",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/esm/index.js",
   "unpkg": "./dist/auto.js",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/esm/index.js"
     },
     "./auto": "./dist/auto.js",
-    "./auto.js": "./dist/auto.js",
-    "./package.json": "./package.json"
+    "./auto.js": "./dist/auto.js"
   },
   "scripts": {
     "start": "vite ./src",
-    "build": "webpack",
+    "build": "webpack; tsc",
     "analyze-build": "webpack --profile --json; webpack-bundle-analyzer",
     "test": "vitest"
   },
@@ -37,7 +36,8 @@
   },
   "dependencies": {
     "d3": "^7.8.4",
-    "d3-flame-graph": "^4.1.3"
+    "d3-flame-graph": "^4.1.3",
+    "idb": "7.1.1"
   },
   "peerDependencies": {
     "@dfinity/agent": "x.x.x",
