@@ -14,7 +14,16 @@ To use the component, you can either install it from npm:
 npm install @dfinity/candid-ui
 ```
 
-However, the package is optimized to be used in a script tag, so we recommend using the auto setup script from unpkg:
+However, the package is optimized to be used in a script tag, so we recommend using the auto setup script. You can serve the script yourself, or use a CDN like unpkg for convenience:
+
+Example from node_modules:
+
+```html
+<script type="module" src="./node_modules/@dfinity/candid-ui/dist/auto.js"></script>
+<candid-ui canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai"></candid-ui>
+```
+
+Example from unpkg:
 
 ```html
 <script type="module" src="https://unpkg.com/@dfinity/candid-ui/dist/auto.js"></script>
