@@ -1,6 +1,6 @@
 {
   "name": "@dfinity/candid-ui",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "This package provides a simple UI for the Candid Interface Declaration Language. It is a simple web application that can be used to explore Candid interfaces, and to generate calls to canisters using them.",
   "type": "module",
   "main": "dist/esm/index.js",
