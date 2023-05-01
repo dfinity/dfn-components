@@ -28,11 +28,18 @@ export const vecForm = (ty: IDL.Type, config: Partial<UI.FormConfig>) => {
 };
 
 export class Render extends IDL.Visitor<null, InputBox> {
+  #defaultValue: any;
+  
+  constructor(defaultValue?: unknown) {
+    super();
+    this.#defaultValue = defaultValue;
+  }
   public visitType<T>(t: IDL.Type<T>, d: null): InputBox {
     const input = document.createElement('input');
     input.classList.add('argument');
     input.placeholder = t.display();
-    return inputBox(t, { input });
+    console.log('i am called again')
+    return inputBox(t, { input, defaultValue: this.#defaultValue });
   }
   public visitNull(t: IDL.NullClass, d: null): InputBox {
     return inputBox(t, {});
@@ -44,8 +51,9 @@ export class Render extends IDL.Visitor<null, InputBox> {
       container.classList.add('popup-form');
       config = { container };
     }
+
     const form = recordForm(fields, config);
-    return inputBox(t, { form });
+    return inputBox(t, { form, defaultValue: this.#defaultValue });
   }
   public visitTuple<T extends any[]>(
     t: IDL.TupleClass<T>,
@@ -68,10 +76,31 @@ export class Render extends IDL.Visitor<null, InputBox> {
       select.add(option);
     }
     select.selectedIndex = -1;
-    select.classList.add('open');
-    const config: Partial<UI.FormConfig> = { open: select, event: 'change' };
-    const form = variantForm(fields, config);
-    return inputBox(t, { form });
+    select.classList.add("open");
+    
+    const uiConfig = {
+      form: {
+        open: select,
+        event: "change",
+        defaultSubValues: undefined,
+      },
+      defaultValue: undefined
+    };
+
+    if(this.#defaultValue) {
+      const [selectedVariantKey] = Object.keys(this.#defaultValue);
+      if (selectedVariantKey) {
+        const index = fields.findIndex(([fieldKey]) => fieldKey == selectedVariantKey)
+        if(!isNaN(index)) {
+          select.selectedIndex = index;
+          uiConfig.defaultValue = this.#defaultValue[selectedVariantKey];
+          uiConfig.form.defaultSubValues =
+            this.#defaultValue[selectedVariantKey];
+        }
+      }
+    }
+    const form = variantForm(fields, uiConfig.form);
+    return inputBox(t, { form, defaultValue: uiConfig.defaultValue });
   }
   public visitOpt<T>(t: IDL.OptClass<T>, ty: IDL.Type<T>, d: null): InputBox {
     const checkbox = document.createElement('input');
@@ -204,8 +233,8 @@ function parsePrimitive(t: IDL.Type, config: UI.ParseConfig, d: string) {
  * @param t an IDL type
  * @returns an input for that type
  */
-export function renderInput(t: IDL.Type): InputBox {
-  return t.accept(new Render(), null);
+export function renderInput(t: IDL.Type, defaultValue?: any): InputBox {
+  return t.accept(new Render(defaultValue), null);
 }
 
 interface ValueConfig {

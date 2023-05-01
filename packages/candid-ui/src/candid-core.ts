@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IDL } from '@dfinity/candid';
+import { tickStep } from 'd3';
 
 // tslint:disable:max-classes-per-file
 
@@ -11,6 +12,7 @@ export interface ParseConfig {
 export interface UIConfig {
   input?: HTMLElement;
   form?: InputForm;
+  defaultValue?: string | number;
   parse(t: IDL.Type, config: ParseConfig, v: string): any;
 }
 
@@ -19,7 +21,8 @@ export interface FormConfig {
   event?: string;
   labelMap?: Record<string, string>;
   container?: HTMLElement;
-  render(t: IDL.Type): InputBox;
+  defaultSubValues?: any;
+  render(t: IDL.Type, defaultValue?: any): InputBox;
 }
 
 export class InputBox {
@@ -28,6 +31,7 @@ export class InputBox {
   public value: any = undefined;
 
   constructor(public idl: IDL.Type, public ui: UIConfig) {
+    console.log("🚀 ~ file: candid-core.ts:33 ~ InputBox ~ constructor ~ ui:", ui)
     const status = document.createElement('span');
     status.className = 'status';
     this.status = status;
@@ -84,6 +88,10 @@ export class InputBox {
       container.appendChild(label);
     }
     if (this.ui.input) {
+      console.log(`Setting the default value for ${this.label}, to value:`, this.ui.defaultValue)
+      if(this.ui.defaultValue) {
+        this.ui.input.value = this.ui.defaultValue.toString()
+      }
       container.appendChild(this.ui.input);
       container.appendChild(this.status);
     }
@@ -114,7 +122,7 @@ export abstract class InputForm {
       dom.appendChild(this.ui.open);
       const form = this;
       // eslint-disable-next-line
-      form.ui.open!.addEventListener(form.ui.event!, () => {
+      const handleChangeEvent = () => {
         // Remove old form
         if (form.ui.container) {
           form.ui.container.innerHTML = '';
@@ -127,7 +135,11 @@ export abstract class InputForm {
         // Render form
         form.generateForm();
         form.renderForm(dom);
-      });
+      }
+      form.ui.open!.addEventListener(form.ui.event!, handleChangeEvent);
+      // Here we 'trigger' an initial change event to create a cascade render
+      // We will need to pass the default value here to the sub-forms created
+      handleChangeEvent();
     } else {
       this.generateForm();
       this.renderForm(dom);
@@ -138,6 +150,7 @@ export abstract class InputForm {
 export class RecordForm extends InputForm {
   constructor(public fields: Array<[string, IDL.Type]>, public ui: FormConfig) {
     super(ui);
+    console.log(`New RecordFor, default sub values:`, this.ui.defaultSubValues)
   }
   public generateForm(): void {
     this.form = this.fields.map(([key, type]) => {
@@ -170,7 +183,7 @@ export class TupleForm extends InputForm {
   }
   public generateForm(): void {
     this.form = this.components.map(type => {
-      const input = this.ui.render(type);
+      const input = this.ui.render(type, 'testTuple');
       return input;
     });
   }
@@ -194,7 +207,8 @@ export class VariantForm extends InputForm {
   public generateForm(): void {
     const index = (this.ui.open as HTMLSelectElement).selectedIndex;
     const [_, type] = this.fields[index];
-    const variant = this.ui.render(type);
+    const variant = this.ui.render(type,  this.ui.defaultSubValues);
+    console.log("🚀 ~ file: candid-core.ts:211 ~ VariantForm ~ generateForm ~ this.ui.defaultSubValues:", this.ui)
     this.form = [variant];
   }
   public parse(config: ParseConfig): Record<string, any> | undefined {

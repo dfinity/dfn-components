@@ -13,7 +13,7 @@ import { Principal } from "@dfinity/principal";
 import { log, renderMethod } from "./renderMethod";
 import { IdbNetworkIds } from "./db";
 import { styles } from "./styles";
-import { html, stringify } from "./utils";
+import { html, rehidrateJson, stringify } from "./utils";
 import type { CanisterIdInput } from "./CanisterIdInput";
 
 if (!("global" in window)) {
@@ -24,6 +24,10 @@ class AnonymousAgent extends HttpAgent {}
 
 type LogLevel = "none" | "debug";
 
+type DefaultValues = {
+  function: string;
+  args: any;
+};
 export class CandidUI extends HTMLElement {
   #identity?: Identity = new AnonymousIdentity();
   #db?: IdbNetworkIds;
@@ -37,6 +41,7 @@ export class CandidUI extends HTMLElement {
   #methods: string[] = [];
   #isInitialized = false;
   #logLevel: LogLevel = "none";
+  #defaultValues?: DefaultValues;
 
   constructor() {
     super();
@@ -69,7 +74,14 @@ export class CandidUI extends HTMLElement {
 
   // Values that can be set via attribute
   static get observedAttributes() {
-    return ["canisterid", "host", "title", "description", "methods"];
+    return [
+      "canisterid",
+      "defaultValues",
+      "description",
+      "host",
+      "methods",
+      "title",
+    ];
   }
   /**
    * setter for host
@@ -330,6 +342,14 @@ export class CandidUI extends HTMLElement {
         this.#methods = methods;
       }
     }
+    if (this.hasAttribute("defaultValues")) {
+      const defaultValues = this.getAttribute("defaultValues");
+      if (defaultValues) {
+        const parsedDefaultValues = JSON.parse(defaultValues);
+        parsedDefaultValues.args = rehidrateJson(parsedDefaultValues.args);
+        this.#defaultValues = parsedDefaultValues;
+      }
+    }
     const titleAttribute = this.getAttribute("title");
     if (this.hasAttribute("title") && typeof titleAttribute === "string") {
       this.#title = titleAttribute;
@@ -389,13 +409,13 @@ export class CandidUI extends HTMLElement {
     ) {
       console.groupCollapsed("Trying well known local hosts");
       try {
-        const proxyResponse = await(await fetch("/api/v2")).text();
+        const proxyResponse = await (await fetch("/api/v2")).text();
         if (proxyResponse.startsWith("Unexpected GET")) {
           host = location.origin;
         }
       } catch (_) {}
       try {
-        const defaultLocalResponse = await(
+        const defaultLocalResponse = await (
           await fetch("http://127.0.0.1:4943/api/v2")
         ).text();
         console.log(defaultLocalResponse);
@@ -404,7 +424,7 @@ export class CandidUI extends HTMLElement {
         }
       } catch (_) {}
       try {
-        const systemLocalResponse = await(
+        const systemLocalResponse = await (
           await fetch("http://127.0.0.1:8080/api/v2")
         ).text();
 
@@ -514,14 +534,36 @@ export class CandidUI extends HTMLElement {
         });
 
         for (const [name, func] of methods) {
-          renderMethod(actor, name, func, shadowRoot, async () => undefined);
+          const { function: funcName, args } = this.#defaultValues || {};
+          if (funcName == name)
+            renderMethod(
+              actor,
+              name,
+              func,
+              shadowRoot,
+              async () => undefined,
+              args
+            );
+          else
+            renderMethod(actor, name, func, shadowRoot, async () => undefined);
         }
         return;
       } else {
         this.#methods = sortedMethods.map(([name]) => name);
 
         for (const [name, func] of sortedMethods) {
-          renderMethod(actor, name, func, shadowRoot, async () => undefined);
+          const { function: funcName, args } = this.#defaultValues || {};
+          if (funcName == name)
+            renderMethod(
+              actor,
+              name,
+              func,
+              shadowRoot,
+              async () => undefined,
+              args
+            );
+          else
+            renderMethod(actor, name, func, shadowRoot, async () => undefined);
         }
       }
     } catch (e: unknown) {
@@ -659,7 +701,7 @@ export class CandidUI extends HTMLElement {
       });
 
     const candidCanister = this.#isLocal
-      ? `ryjl3-tyaaa-aaaaa-aaaba-cai`
+      ? `r7inp-6aaaa-aaaaa-aaabq-cai`
       : `a4gq6-oaaaa-aaaab-qaa4q-cai`;
 
     this.#log(`candidCanister: ${candidCanister}`);

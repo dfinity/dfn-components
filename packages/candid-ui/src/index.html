@@ -7,8 +7,8 @@
     <title>Example Candid UI</title>
   </head>
   <body>
-    <section style="height: 80vh; width: 600px; resize: both; overflow: auto">
-      <candid-ui canisterId="fkjyf-lyaaa-aaaab-qah7q-cai" logLevel="debug" methods="whoami">
+    <section >
+      <candid-ui host="http://localhost:8000" canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai" logLevel="debug" defaultValues='{"function":"mint_nft_origyn","args":["nft1",{"account":{"owner":{"__principalAsText":"jvdm5-xkwgc-4t2x7-ojmjd-ail2p-6agif-7m6a6-z6eok-oxueq-inzfb-zae"},"sub_account":[[8]]}}]}' methods="mint_nft_origyn">
         <h1 slot="title">My title</h1>
         <style slot="styles">
           button:first-child {
@@ -20,6 +20,25 @@
       <!--<candid-ui host="https://icp-api.io" canisterId="fkjyf-lyaaa-aaaab-qah7q-cai"></candid-ui>-->
     </section>
     <script>
+      const df = {
+        function: "mint_nft_origyn",
+        args: [
+          "nft1",
+          {
+            "account": {
+              "owner": {
+                "__principalAsText": "jvdm5-xkwgc-4t2x7-ojmjd-ail2p-6agif-7m6a6-z6eok-oxueq-inzfb-zae"
+              },
+              "sub_account": [
+                [
+                  8
+                ]
+              ]
+            }
+          }
+        ]
+      };
+      console.log(JSON.stringify(df));
       /** time to load the candid ui */
 
       console.time('candid-ui import');
