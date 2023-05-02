@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IDL } from '@dfinity/candid';
-import { tickStep } from 'd3';
+import { IDL } from "@dfinity/candid";
 
 // tslint:disable:max-classes-per-file
 
@@ -31,21 +30,20 @@ export class InputBox {
   public value: any = undefined;
 
   constructor(public idl: IDL.Type, public ui: UIConfig) {
-    console.log("🚀 ~ file: candid-core.ts:33 ~ InputBox ~ constructor ~ ui:", ui)
-    const status = document.createElement('span');
-    status.className = 'status';
+    const status = document.createElement("span");
+    status.className = "status";
     this.status = status;
 
     if (ui.input) {
-      ui.input.addEventListener('blur', () => {
-        if ((ui.input as HTMLInputElement).value === '') {
+      ui.input.addEventListener("blur", () => {
+        if ((ui.input as HTMLInputElement).value === "") {
           return;
         }
         this.parse();
       });
-      ui.input.addEventListener('input', () => {
-        status.style.display = 'none';
-        ui.input!.classList.remove('reject');
+      ui.input.addEventListener("input", () => {
+        status.style.display = "none";
+        ui.input!.classList.remove("reject");
       });
     }
   }
@@ -65,15 +63,17 @@ export class InputBox {
       try {
         const value = this.ui.parse(this.idl, config, input.value);
         if (!this.idl.covariant(value)) {
-          throw new Error(`${input.value} is not of type ${this.idl.display()}`);
+          throw new Error(
+            `${input.value} is not of type ${this.idl.display()}`
+          );
         }
-        this.status.style.display = 'none';
+        this.status.style.display = "none";
         this.value = value;
         return value;
       } catch (err) {
-        input.classList.add('reject');
-        this.status.style.display = 'block';
-        this.status.innerHTML = 'InputError: ' + (err as Error).message;
+        input.classList.add("reject");
+        this.status.style.display = "block";
+        this.status.innerHTML = "InputError: " + (err as Error).message;
         this.value = undefined;
         return undefined;
       }
@@ -81,22 +81,30 @@ export class InputBox {
     return null;
   }
   public render(dom: HTMLElement): void {
-    const container = document.createElement('span');
+    const container = document.createElement("span");
     if (this.label) {
-      const label = document.createElement('label');
+      const label = document.createElement("label");
       label.innerText = this.label;
       container.appendChild(label);
     }
+
     if (this.ui.input) {
-      console.log(`Setting the default value for ${this.label}, to value:`, this.ui.defaultValue)
-      if(this.ui.defaultValue) {
-        this.ui.input.value = this.ui.defaultValue.toString()
+      console.log(
+        `Setting the default value for ${this.label}, to value:`,
+        this.ui.defaultValue
+      );
+      if (this.ui.defaultValue) {
+        this.ui.input.value = this.ui.defaultValue.toString();
       }
       container.appendChild(this.ui.input);
       container.appendChild(this.status);
     }
 
     if (this.ui.form) {
+      console.log(
+        "🚀 ~ file: candid-core.ts:92 ~ InputBox ~ render ~ this.ui:",
+        this.ui
+      );
       this.ui.form.render(container);
     }
     dom.appendChild(container);
@@ -110,11 +118,12 @@ export abstract class InputForm {
   public abstract parse(config: ParseConfig): any;
   public abstract generateForm(): any;
   public renderForm(dom: HTMLElement): void {
+    console.log("🚀 ~ file: candid-core.ts:123 ~ InputForm ~ renderForm ~ this.form:", this)
     if (this.ui.container) {
-      this.form.forEach(e => e.render(this.ui.container!));
+      this.form.forEach((e) => e.render(this.ui.container!));
       dom.appendChild(this.ui.container);
     } else {
-      this.form.forEach(e => e.render(dom));
+      this.form.forEach((e) => e.render(dom));
     }
   }
   public render(dom: HTMLElement): void {
@@ -125,7 +134,7 @@ export abstract class InputForm {
       const handleChangeEvent = () => {
         // Remove old form
         if (form.ui.container) {
-          form.ui.container.innerHTML = '';
+          form.ui.container.innerHTML = "";
         } else {
           const oldContainer = form.ui.open!.nextElementSibling;
           if (oldContainer) {
@@ -135,7 +144,7 @@ export abstract class InputForm {
         // Render form
         form.generateForm();
         form.renderForm(dom);
-      }
+      };
       form.ui.open!.addEventListener(form.ui.event!, handleChangeEvent);
       // Here we 'trigger' an initial change event to create a cascade render
       // We will need to pass the default value here to the sub-forms created
@@ -150,16 +159,16 @@ export abstract class InputForm {
 export class RecordForm extends InputForm {
   constructor(public fields: Array<[string, IDL.Type]>, public ui: FormConfig) {
     super(ui);
-    console.log(`New RecordFor, default sub values:`, this.ui.defaultSubValues)
+    console.log(`New RecordFor, default sub values:`, this.ui.defaultSubValues);
   }
   public generateForm(): void {
     this.form = this.fields.map(([key, type]) => {
-      const input = this.ui.render(type);
+      const input = this.ui.render(type, this.ui.defaultSubValues[key]);
       // eslint-disable-next-line
       if (this.ui.labelMap && this.ui.labelMap.hasOwnProperty(key)) {
-        input.label = this.ui.labelMap[key] + ' ';
+        input.label = this.ui.labelMap[key] + " ";
       } else {
-        input.label = key + ' ';
+        input.label = key + " ";
       }
       return input;
     });
@@ -170,7 +179,7 @@ export class RecordForm extends InputForm {
       const value = this.form[i].parse(config);
       v[key] = value;
     });
-    if (this.form.some(input => input.isRejected())) {
+    if (this.form.some((input) => input.isRejected())) {
       return undefined;
     }
     return v;
@@ -182,8 +191,8 @@ export class TupleForm extends InputForm {
     super(ui);
   }
   public generateForm(): void {
-    this.form = this.components.map(type => {
-      const input = this.ui.render(type, 'testTuple');
+    this.form = this.components.map((type) => {
+      const input = this.ui.render(type, "testTuple");
       return input;
     });
   }
@@ -193,7 +202,7 @@ export class TupleForm extends InputForm {
       const value = this.form[i].parse(config);
       v.push(value);
     });
-    if (this.form.some(input => input.isRejected())) {
+    if (this.form.some((input) => input.isRejected())) {
       return undefined;
     }
     return v;
@@ -207,8 +216,7 @@ export class VariantForm extends InputForm {
   public generateForm(): void {
     const index = (this.ui.open as HTMLSelectElement).selectedIndex;
     const [_, type] = this.fields[index];
-    const variant = this.ui.render(type,  this.ui.defaultSubValues);
-    console.log("🚀 ~ file: candid-core.ts:211 ~ VariantForm ~ generateForm ~ this.ui.defaultSubValues:", this.ui)
+    const variant = this.ui.render(type, this.ui.defaultSubValues);
     this.form = [variant];
   }
   public parse(config: ParseConfig): Record<string, any> | undefined {
@@ -229,8 +237,9 @@ export class OptionForm extends InputForm {
     super(ui);
   }
   public generateForm(): void {
+    console.log('new opt form, default values:', this.ui.defaultSubValues);
     if ((this.ui.open as HTMLInputElement).checked) {
-      const opt = this.ui.render(this.ty);
+      const opt = this.ui.render(this.ty, this.ui.defaultSubValues);
       this.form = [opt];
     } else {
       this.form = [];
@@ -254,18 +263,19 @@ export class VecForm extends InputForm {
     super(ui);
   }
   public generateForm(): void {
+    console.log('new vec form, default values:', this.ui.defaultSubValues);
     const len = +(this.ui.open as HTMLInputElement).value;
     this.form = [];
     for (let i = 0; i < len; i++) {
-      const t = this.ui.render(this.ty);
+      const t = this.ui.render(this.ty, this.ui.defaultSubValues[i]);
       this.form.push(t);
     }
   }
   public parse<T>(config: ParseConfig): T[] | undefined {
-    const value = this.form.map(input => {
+    const value = this.form.map((input) => {
       return input.parse(config);
     });
-    if (this.form.some(input => input.isRejected())) {
+    if (this.form.some((input) => input.isRejected())) {
       return undefined;
     }
     return value;

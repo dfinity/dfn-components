@@ -61,10 +61,6 @@ export function renderMethod(
   methodForm.appendChild(inputContainer);
 
   const inputs: InputBox[] = [];
-  if (defaultArgs) {
-    console.log("Args of function:", idlFunc.argTypes);
-    console.log("defaultArgs of function:", defaultArgs);
-  }
   idlFunc.argTypes.forEach((arg, i) => {
     const inputbox = renderInput(arg, defaultArgs?.[i]);
     inputs.push(inputbox);
@@ -277,6 +273,29 @@ export function renderMethod(
     callAndRender(args);
     return false;
   });
+  
+  const allInputs = getAllHtmlInputs(inputs);
+  for(const element of allInputs) {
+    element.addEventListener("input", (e) => {
+      const args = inputs.map((arg) => arg.parse());
+      const isReject = inputs.some((arg) => arg.isRejected());
+      if (isReject) {
+        return;
+      }
+
+      const inputEvent = new CustomEvent("input", {
+        detail: {
+          method: name,
+          args: JSON.parse(stringify(args)),
+        },
+        bubbles: true,
+        composed: true,
+      });
+      root.dispatchEvent(inputEvent);
+
+    })
+  }
+  
 }
 
 function encodeStr(str: string) {
@@ -395,4 +414,16 @@ function postToPlayground(id: Principal) {
     `CandidUI${stringify(message)}`,
     "*"
   );
+}
+
+function getAllHtmlInputs(inputs: InputBox[]): HTMLElement[] {
+  const allHtmlInputs: HTMLElement[] = [];
+  
+  for (const input of inputs) {
+    if(input.ui.input)
+      allHtmlInputs.push(input.ui?.input);
+    if(input.ui.form)
+      allHtmlInputs.push(...getAllHtmlInputs(input.ui.form.form));
+  }
+  return allHtmlInputs;
 }

@@ -7,8 +7,9 @@
     <title>Example Candid UI</title>
   </head>
   <body>
-    <section >
-      <candid-ui host="http://localhost:8000" canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai" logLevel="debug" defaultValues='{"function":"mint_nft_origyn","args":["nft1",{"account":{"owner":{"__principalAsText":"jvdm5-xkwgc-4t2x7-ojmjd-ail2p-6agif-7m6a6-z6eok-oxueq-inzfb-zae"},"sub_account":[[8]]}}]}' methods="mint_nft_origyn">
+    <section>
+      <candid-ui canisterId="nik4u-6aaaa-aaaag-abjna-cai" logLevel="debug"
+        defaultValues='{"method":"mint_nft_origyn","args":["nft1",{"account":{"owner":"jvdm5-xkwgc-4t2x7-ojmjd-ail2p-6agif-7m6a6-z6eok-oxueq-inzfb-zae","sub_account":[[8]]}}]}' methods="mint_nft_origyn">
         <h1 slot="title">My title</h1>
         <style slot="styles">
           button:first-child {
@@ -26,9 +27,7 @@
           "nft1",
           {
             "account": {
-              "owner": {
-                "__principalAsText": "jvdm5-xkwgc-4t2x7-ojmjd-ail2p-6agif-7m6a6-z6eok-oxueq-inzfb-zae"
-              },
+              "owner": "jvdm5-xkwgc-4t2x7-ojmjd-ail2p-6agif-7m6a6-z6eok-oxueq-inzfb-zae",
               "sub_account": [
                 [
                   8
@@ -58,6 +57,9 @@
       });
       document.querySelector('candid-ui').addEventListener('request', e => {
         console.log('candid-ui request', e);
+      });
+      document.querySelector('candid-ui').addEventListener('input', e => {
+        console.log('candid-ui input', e);
       });
     </script>
   </body>

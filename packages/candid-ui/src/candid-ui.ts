@@ -38,7 +38,6 @@ export class Render extends IDL.Visitor<null, InputBox> {
     const input = document.createElement('input');
     input.classList.add('argument');
     input.placeholder = t.display();
-    console.log('i am called again')
     return inputBox(t, { input, defaultValue: this.#defaultValue });
   }
   public visitNull(t: IDL.NullClass, d: null): InputBox {
@@ -52,6 +51,9 @@ export class Render extends IDL.Visitor<null, InputBox> {
       config = { container };
     }
 
+    // We are passing sub values here as the form will have multiple fields
+    // @ts-ignore
+    config.defaultSubValues = this.#defaultValue
     const form = recordForm(fields, config);
     return inputBox(t, { form, defaultValue: this.#defaultValue });
   }
@@ -66,6 +68,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
       container.classList.add('popup-form');
       config = { container };
     }
+    // TODO: default value here
     const form = tupleForm(components, config);
     return inputBox(t, { form });
   }
@@ -106,7 +109,11 @@ export class Render extends IDL.Visitor<null, InputBox> {
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.classList.add('open');
-    const form = optForm(ty, { open: checkbox, event: 'change' });
+
+    if(this.#defaultValue) 
+      checkbox.checked = true;
+
+    const form = optForm(ty, { open: checkbox, event: 'change', defaultSubValues: this.#defaultValue });
     return inputBox(t, { form });
   }
   public visitVec<T>(t: IDL.VecClass<T>, ty: IDL.Type<T>, d: null): InputBox {
@@ -117,9 +124,14 @@ export class Render extends IDL.Visitor<null, InputBox> {
     len.style.width = '8rem';
     len.placeholder = 'len';
     len.classList.add('open');
+
+    if(this.#defaultValue) {
+      len.value = this.#defaultValue
+    }
+
     const container = document.createElement('div');
     container.classList.add('popup-form');
-    const form = vecForm(ty, { open: len, event: 'change', container });
+    const form = vecForm(ty, { open: len, event: 'change', container, defaultSubValues: this.#defaultValue });
     return inputBox(t, { form });
   }
   public visitRec<T>(t: IDL.RecClass<T>, ty: IDL.ConstructType<T>, d: null): InputBox {

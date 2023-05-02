@@ -25,7 +25,7 @@ class AnonymousAgent extends HttpAgent {}
 type LogLevel = "none" | "debug";
 
 type DefaultValues = {
-  function: string;
+  method: string;
   args: any;
 };
 export class CandidUI extends HTMLElement {
@@ -534,8 +534,8 @@ export class CandidUI extends HTMLElement {
         });
 
         for (const [name, func] of methods) {
-          const { function: funcName, args } = this.#defaultValues || {};
-          if (funcName == name)
+          const { method, args } = this.#defaultValues || {};
+          if (method == name)
             renderMethod(
               actor,
               name,
@@ -552,8 +552,8 @@ export class CandidUI extends HTMLElement {
         this.#methods = sortedMethods.map(([name]) => name);
 
         for (const [name, func] of sortedMethods) {
-          const { function: funcName, args } = this.#defaultValues || {};
-          if (funcName == name)
+          const { method, args } = this.#defaultValues || {};
+          if (method == name)
             renderMethod(
               actor,
               name,
