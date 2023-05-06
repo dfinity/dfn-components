@@ -58,8 +58,14 @@
       document.querySelector('candid-ui').addEventListener('request', e => {
         console.log('candid-ui request', e);
       });
-      document.querySelector('candid-ui').addEventListener('input', e => {
-        console.log('candid-ui input', e);
+      document.querySelector('candid-ui').addEventListener('filled', e => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if(e?.detail) {
+          const parsedValues = JSON.stringify(e.detail);
+          console.log("🚀 ~ file: index.html:65 ~ document.querySelector ~ parsedValues:", parsedValues)
+          urlParams.set('defaultValue', encodeURIComponent(parsedValues));
+          // window.location.search = urlParams;
+        }
       });
     </script>
   </body>

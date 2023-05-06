@@ -273,17 +273,19 @@ export function renderMethod(
     callAndRender(args);
     return false;
   });
-  
-  const allInputs = getAllHtmlInputs(inputs);
-  for(const element of allInputs) {
-    element.addEventListener("input", (e) => {
+
+  const onChangeHandler = () => {
+    const FORM_EVENT_HANDLER_TIMEOUT = 500;
+
+    setTimeout(() => {
+      attachChangeListeners();
       const args = inputs.map((arg) => arg.parse());
       const isReject = inputs.some((arg) => arg.isRejected());
       if (isReject) {
         return;
       }
 
-      const inputEvent = new CustomEvent("input", {
+      const inputEvent = new CustomEvent("filled", {
         detail: {
           method: name,
           args: JSON.parse(stringify(args)),
@@ -292,10 +294,17 @@ export function renderMethod(
         composed: true,
       });
       root.dispatchEvent(inputEvent);
+    }, FORM_EVENT_HANDLER_TIMEOUT);
+  };
 
-    })
-  }
-  
+  const attachChangeListeners = () => {
+    const allInputs: Element[] = Array.from(getAllHtmlInputs() ?? []);
+    for (const element of allInputs) {
+      element.removeEventListener("input", onChangeHandler);
+      element.addEventListener("input", onChangeHandler);
+    }
+  };
+  attachChangeListeners();
 }
 
 function encodeStr(str: string) {
@@ -416,14 +425,8 @@ function postToPlayground(id: Principal) {
   );
 }
 
-function getAllHtmlInputs(inputs: InputBox[]): HTMLElement[] {
-  const allHtmlInputs: HTMLElement[] = [];
-  
-  for (const input of inputs) {
-    if(input.ui.input)
-      allHtmlInputs.push(input.ui?.input);
-    if(input.ui.form)
-      allHtmlInputs.push(...getAllHtmlInputs(input.ui.form.form));
-  }
-  return allHtmlInputs;
+function getAllHtmlInputs() {
+  const shadowRoot = document.querySelector("candid-ui")?.shadowRoot;
+  const inputs = shadowRoot?.querySelectorAll("input, select");
+  return inputs;
 }

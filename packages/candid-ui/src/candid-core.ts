@@ -89,10 +89,6 @@ export class InputBox {
     }
 
     if (this.ui.input) {
-      console.log(
-        `Setting the default value for ${this.label}, to value:`,
-        this.ui.defaultValue
-      );
       if (this.ui.defaultValue) {
         this.ui.input.value = this.ui.defaultValue.toString();
       }
@@ -101,10 +97,6 @@ export class InputBox {
     }
 
     if (this.ui.form) {
-      console.log(
-        "🚀 ~ file: candid-core.ts:92 ~ InputBox ~ render ~ this.ui:",
-        this.ui
-      );
       this.ui.form.render(container);
     }
     dom.appendChild(container);
@@ -118,7 +110,6 @@ export abstract class InputForm {
   public abstract parse(config: ParseConfig): any;
   public abstract generateForm(): any;
   public renderForm(dom: HTMLElement): void {
-    console.log("🚀 ~ file: candid-core.ts:123 ~ InputForm ~ renderForm ~ this.form:", this)
     if (this.ui.container) {
       this.form.forEach((e) => e.render(this.ui.container!));
       dom.appendChild(this.ui.container);
@@ -131,9 +122,12 @@ export abstract class InputForm {
       dom.appendChild(this.ui.open);
       const form = this;
       // eslint-disable-next-line
-      const handleChangeEvent = () => {
-        // Remove old form
+      const handleChangeEvent = (_?: Event, isInitialRender = false) => {
+        if (!isInitialRender) {
+          delete this.ui.defaultSubValues;
+        }
         if (form.ui.container) {
+          // Remove old form
           form.ui.container.innerHTML = "";
         } else {
           const oldContainer = form.ui.open!.nextElementSibling;
@@ -148,7 +142,7 @@ export abstract class InputForm {
       form.ui.open!.addEventListener(form.ui.event!, handleChangeEvent);
       // Here we 'trigger' an initial change event to create a cascade render
       // We will need to pass the default value here to the sub-forms created
-      handleChangeEvent();
+      handleChangeEvent(undefined, true);
     } else {
       this.generateForm();
       this.renderForm(dom);
@@ -159,11 +153,10 @@ export abstract class InputForm {
 export class RecordForm extends InputForm {
   constructor(public fields: Array<[string, IDL.Type]>, public ui: FormConfig) {
     super(ui);
-    console.log(`New RecordFor, default sub values:`, this.ui.defaultSubValues);
   }
   public generateForm(): void {
     this.form = this.fields.map(([key, type]) => {
-      const input = this.ui.render(type, this.ui.defaultSubValues[key]);
+      const input = this.ui.render(type, this.ui.defaultSubValues?.[key]);
       // eslint-disable-next-line
       if (this.ui.labelMap && this.ui.labelMap.hasOwnProperty(key)) {
         input.label = this.ui.labelMap[key] + " ";
@@ -237,7 +230,6 @@ export class OptionForm extends InputForm {
     super(ui);
   }
   public generateForm(): void {
-    console.log('new opt form, default values:', this.ui.defaultSubValues);
     if ((this.ui.open as HTMLInputElement).checked) {
       const opt = this.ui.render(this.ty, this.ui.defaultSubValues);
       this.form = [opt];
@@ -263,11 +255,10 @@ export class VecForm extends InputForm {
     super(ui);
   }
   public generateForm(): void {
-    console.log('new vec form, default values:', this.ui.defaultSubValues);
     const len = +(this.ui.open as HTMLInputElement).value;
     this.form = [];
     for (let i = 0; i < len; i++) {
-      const t = this.ui.render(this.ty, this.ui.defaultSubValues[i]);
+      const t = this.ui.render(this.ty, this.ui.defaultSubValues?.[i]);
       this.form.push(t);
     }
   }
