@@ -298,7 +298,7 @@ export function renderMethod(
   };
 
   const attachChangeListeners = () => {
-    const allInputs: Element[] = Array.from(getAllHtmlInputs() ?? []);
+    const allInputs: Element[] = Array.from(getAllHtmlInputs(name) ?? []);
     for (const element of allInputs) {
       element.removeEventListener("input", onChangeHandler);
       element.addEventListener("input", onChangeHandler);
@@ -425,8 +425,9 @@ function postToPlayground(id: Principal) {
   );
 }
 
-function getAllHtmlInputs() {
+function getAllHtmlInputs(methodName: string) {
   const shadowRoot = document.querySelector("candid-ui")?.shadowRoot;
-  const inputs = shadowRoot?.querySelectorAll("input, select");
+  const methodContainer = shadowRoot?.querySelector(`li#${methodName}`);
+  const inputs = methodContainer?.querySelectorAll("input, select");
   return inputs;
 }

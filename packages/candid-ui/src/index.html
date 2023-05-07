@@ -60,24 +60,9 @@
         console.log('candid-ui request', e);
       });
       document.querySelector('candid-ui').addEventListener('filled', e => {
-        const principalToText = (config) => {
-          if (typeof config !== 'object') {
-            return config;
-          }
-          for (const p in config) {
-            if (config[p]._isPrincipal) {
-              config[p] = Principal.fromUint8Array(config[p]._arr);
-            }
-            else if (typeof config[p]) {
-              config[p] = principalToText(config[p]);
-            }
-          }
-          return config;
-        };
+        
 
-        const urlParams = new URLSearchParams(window.location.search);
         if (e?.detail) {
-          console.log("🚀 ~ file: index.html:79 ~ document.querySelector ~ e?.detail:", principalToText(e?.detail))
           const parsedValues = JSON.stringify(e.detail);
           console.log("🚀 ~ file: index.html:65 ~ document.querySelector ~ parsedValues:", parsedValues)
           urlParams.set('defaultValue', encodeURIComponent(parsedValues));
