@@ -90,6 +90,7 @@ export class InputBox {
 
     if (this.ui.input) {
       if (this.ui.defaultValue) {
+        // @ts-ignore
         this.ui.input.value = this.ui.defaultValue.toString();
       }
       container.appendChild(this.ui.input);

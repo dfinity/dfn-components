@@ -78,7 +78,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
       const option = new Option(key);
       select.add(option);
     }
-    select.selectedIndex = -1;
+    select.selectedIndex = 0;
     select.classList.add("open");
     
     const uiConfig = {

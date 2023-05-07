@@ -9,7 +9,7 @@
   <body>
     <section>
       <candid-ui canisterId="nik4u-6aaaa-aaaag-abjna-cai" logLevel="debug"
-        defaultValues='{"method":"mint_nft_origyn","args":["nft1",{"account":{"owner":"jvdm5-xkwgc-4t2x7-ojmjd-ail2p-6agif-7m6a6-z6eok-oxueq-inzfb-zae","sub_account":[[8]]}}]}' methods="mint_nft_origyn">
+        methods="mint_nft_origyn">
         <h1 slot="title">My title</h1>
         <style slot="styles">
           button:first-child {
@@ -46,6 +46,7 @@
         console.timeEnd('candid-ui import');
       });
 
+
       document.querySelector('candid-ui').addEventListener('ready', () => {
         console.log('candid-ui ready');
       });
@@ -59,12 +60,29 @@
         console.log('candid-ui request', e);
       });
       document.querySelector('candid-ui').addEventListener('filled', e => {
+        const principalToText = (config) => {
+          if (typeof config !== 'object') {
+            return config;
+          }
+          for (const p in config) {
+            if (config[p]._isPrincipal) {
+              config[p] = Principal.fromUint8Array(config[p]._arr);
+            }
+            else if (typeof config[p]) {
+              config[p] = principalToText(config[p]);
+            }
+          }
+          return config;
+        };
+
         const urlParams = new URLSearchParams(window.location.search);
-        if(e?.detail) {
+        if (e?.detail) {
+          console.log("🚀 ~ file: index.html:79 ~ document.querySelector ~ e?.detail:", principalToText(e?.detail))
           const parsedValues = JSON.stringify(e.detail);
           console.log("🚀 ~ file: index.html:65 ~ document.querySelector ~ parsedValues:", parsedValues)
           urlParams.set('defaultValue', encodeURIComponent(parsedValues));
-          // window.location.search = urlParams;
+          const newUrl = window.location.pathname + '?' + urlParams.toString();
+          history.pushState({ path: newUrl }, '', newUrl);
         }
       });
     </script>

@@ -13,7 +13,7 @@ import { Principal } from "@dfinity/principal";
 import { log, renderMethod } from "./renderMethod";
 import { IdbNetworkIds } from "./db";
 import { styles } from "./styles";
-import { html, rehidrateJson, stringify } from "./utils";
+import { html, stringify } from "./utils";
 import type { CanisterIdInput } from "./CanisterIdInput";
 
 if (!("global" in window)) {
@@ -346,7 +346,7 @@ export class CandidUI extends HTMLElement {
       const defaultValues = this.getAttribute("defaultValues");
       if (defaultValues) {
         const parsedDefaultValues = JSON.parse(defaultValues);
-        parsedDefaultValues.args = rehidrateJson(parsedDefaultValues.args);
+        // parsedDefaultValues.args = rehidrateJson(parsedDefaultValues.args);
         this.#defaultValues = parsedDefaultValues;
       }
     }
