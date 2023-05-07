@@ -32,9 +32,6 @@ export function renderMethod(
   profiler: any,
   defaultArgs?: DefaultArgs
 ) {
-  if (defaultArgs) {
-    console.log(`Method: ${name} has defaultArgs`);
-  }
   const item = document.createElement('li');
   item.id = name;
 
