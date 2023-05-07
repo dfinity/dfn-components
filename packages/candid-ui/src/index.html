@@ -7,9 +7,8 @@
     <title>Example Candid UI</title>
   </head>
   <body>
-    <section>
-      <candid-ui canisterId="nik4u-6aaaa-aaaag-abjna-cai" logLevel="debug"
-        methods="mint_nft_origyn">
+    <section style="height: 80vh; width: 600px; resize: both; overflow: auto">
+      <candid-ui canisterId="fkjyf-lyaaa-aaaab-qah7q-cai" logLevel="debug" methods="whoami">
         <h1 slot="title">My title</h1>
         <style slot="styles">
           button:first-child {
@@ -21,23 +20,6 @@
       <!--<candid-ui host="https://icp-api.io" canisterId="fkjyf-lyaaa-aaaab-qah7q-cai"></candid-ui>-->
     </section>
     <script>
-      const df = {
-        function: "mint_nft_origyn",
-        args: [
-          "nft1",
-          {
-            "account": {
-              "owner": "jvdm5-xkwgc-4t2x7-ojmjd-ail2p-6agif-7m6a6-z6eok-oxueq-inzfb-zae",
-              "sub_account": [
-                [
-                  8
-                ]
-              ]
-            }
-          }
-        ]
-      };
-      console.log(JSON.stringify(df));
       /** time to load the candid ui */
 
       console.time('candid-ui import');
@@ -45,7 +27,6 @@
         defineElement();
         console.timeEnd('candid-ui import');
       });
-
 
       document.querySelector('candid-ui').addEventListener('ready', () => {
         console.log('candid-ui ready');
@@ -58,17 +39,6 @@
       });
       document.querySelector('candid-ui').addEventListener('request', e => {
         console.log('candid-ui request', e);
-      });
-      document.querySelector('candid-ui').addEventListener('filled', e => {
-        
-
-        if (e?.detail) {
-          const parsedValues = JSON.stringify(e.detail);
-          console.log("🚀 ~ file: index.html:65 ~ document.querySelector ~ parsedValues:", parsedValues)
-          urlParams.set('defaultValue', encodeURIComponent(parsedValues));
-          const newUrl = window.location.pathname + '?' + urlParams.toString();
-          history.pushState({ path: newUrl }, '', newUrl);
-        }
       });
     </script>
   </body>

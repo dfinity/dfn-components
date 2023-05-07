@@ -346,7 +346,6 @@ export class CandidUI extends HTMLElement {
       const defaultValues = this.getAttribute("defaultValues");
       if (defaultValues) {
         const parsedDefaultValues = JSON.parse(defaultValues);
-        // parsedDefaultValues.args = rehidrateJson(parsedDefaultValues.args);
         this.#defaultValues = parsedDefaultValues;
       }
     }
@@ -409,13 +408,13 @@ export class CandidUI extends HTMLElement {
     ) {
       console.groupCollapsed("Trying well known local hosts");
       try {
-        const proxyResponse = await (await fetch("/api/v2")).text();
+        const proxyResponse = await(await fetch("/api/v2")).text();
         if (proxyResponse.startsWith("Unexpected GET")) {
           host = location.origin;
         }
       } catch (_) {}
       try {
-        const defaultLocalResponse = await (
+        const defaultLocalResponse = await(
           await fetch("http://127.0.0.1:4943/api/v2")
         ).text();
         console.log(defaultLocalResponse);
@@ -424,7 +423,7 @@ export class CandidUI extends HTMLElement {
         }
       } catch (_) {}
       try {
-        const systemLocalResponse = await (
+        const systemLocalResponse = await(
           await fetch("http://127.0.0.1:8080/api/v2")
         ).text();
 
@@ -701,7 +700,7 @@ export class CandidUI extends HTMLElement {
       });
 
     const candidCanister = this.#isLocal
-      ? `r7inp-6aaaa-aaaaa-aaabq-cai`
+      ? `ryjl3-tyaaa-aaaaa-aaaba-cai`
       : `a4gq6-oaaaa-aaaab-qaa4q-cai`;
 
     this.#log(`candidCanister: ${candidCanister}`);

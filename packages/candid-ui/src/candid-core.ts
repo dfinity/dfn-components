@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IDL } from "@dfinity/candid";
+import { IDL } from '@dfinity/candid';
 
 // tslint:disable:max-classes-per-file
 
@@ -30,20 +30,20 @@ export class InputBox {
   public value: any = undefined;
 
   constructor(public idl: IDL.Type, public ui: UIConfig) {
-    const status = document.createElement("span");
-    status.className = "status";
+    const status = document.createElement('span');
+    status.className = 'status';
     this.status = status;
 
     if (ui.input) {
-      ui.input.addEventListener("blur", () => {
-        if ((ui.input as HTMLInputElement).value === "") {
+      ui.input.addEventListener('blur', () => {
+        if ((ui.input as HTMLInputElement).value === '') {
           return;
         }
         this.parse();
       });
-      ui.input.addEventListener("input", () => {
-        status.style.display = "none";
-        ui.input!.classList.remove("reject");
+      ui.input.addEventListener('input', () => {
+        status.style.display = 'none';
+        ui.input!.classList.remove('reject');
       });
     }
   }
@@ -67,13 +67,13 @@ export class InputBox {
             `${input.value} is not of type ${this.idl.display()}`
           );
         }
-        this.status.style.display = "none";
+        this.status.style.display = 'none';
         this.value = value;
         return value;
       } catch (err) {
-        input.classList.add("reject");
-        this.status.style.display = "block";
-        this.status.innerHTML = "InputError: " + (err as Error).message;
+        input.classList.add('reject');
+        this.status.style.display = 'block';
+        this.status.innerHTML = 'InputError: ' + (err as Error).message;
         this.value = undefined;
         return undefined;
       }
@@ -81,9 +81,9 @@ export class InputBox {
     return null;
   }
   public render(dom: HTMLElement): void {
-    const container = document.createElement("span");
+    const container = document.createElement('span');
     if (this.label) {
-      const label = document.createElement("label");
+      const label = document.createElement('label');
       label.innerText = this.label;
       container.appendChild(label);
     }
@@ -112,10 +112,10 @@ export abstract class InputForm {
   public abstract generateForm(): any;
   public renderForm(dom: HTMLElement): void {
     if (this.ui.container) {
-      this.form.forEach((e) => e.render(this.ui.container!));
+      this.form.forEach(e => e.render(this.ui.container!));
       dom.appendChild(this.ui.container);
     } else {
-      this.form.forEach((e) => e.render(dom));
+      this.form.forEach(e => e.render(dom));
     }
   }
   public render(dom: HTMLElement): void {
@@ -129,7 +129,7 @@ export abstract class InputForm {
         }
         if (form.ui.container) {
           // Remove old form
-          form.ui.container.innerHTML = "";
+          form.ui.container.innerHTML = '';
         } else {
           const oldContainer = form.ui.open!.nextElementSibling;
           if (oldContainer) {
@@ -160,9 +160,9 @@ export class RecordForm extends InputForm {
       const input = this.ui.render(type, this.ui.defaultSubValues?.[key]);
       // eslint-disable-next-line
       if (this.ui.labelMap && this.ui.labelMap.hasOwnProperty(key)) {
-        input.label = this.ui.labelMap[key] + " ";
+        input.label = this.ui.labelMap[key] + ' ';
       } else {
-        input.label = key + " ";
+        input.label = key + ' ';
       }
       return input;
     });
@@ -173,7 +173,7 @@ export class RecordForm extends InputForm {
       const value = this.form[i].parse(config);
       v[key] = value;
     });
-    if (this.form.some((input) => input.isRejected())) {
+    if (this.form.some(input => input.isRejected())) {
       return undefined;
     }
     return v;
@@ -185,8 +185,8 @@ export class TupleForm extends InputForm {
     super(ui);
   }
   public generateForm(): void {
-    this.form = this.components.map((type) => {
-      const input = this.ui.render(type, "testTuple");
+    this.form = this.components.map(type => {
+      const input = this.ui.render(type, 'testTuple');
       return input;
     });
   }
@@ -196,7 +196,7 @@ export class TupleForm extends InputForm {
       const value = this.form[i].parse(config);
       v.push(value);
     });
-    if (this.form.some((input) => input.isRejected())) {
+    if (this.form.some(input => input.isRejected())) {
       return undefined;
     }
     return v;
@@ -264,10 +264,10 @@ export class VecForm extends InputForm {
     }
   }
   public parse<T>(config: ParseConfig): T[] | undefined {
-    const value = this.form.map((input) => {
+    const value = this.form.map(input => {
       return input.parse(config);
     });
-    if (this.form.some((input) => input.isRejected())) {
+    if (this.form.some(input => input.isRejected())) {
       return undefined;
     }
     return value;
