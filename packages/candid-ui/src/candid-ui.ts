@@ -33,6 +33,8 @@ export class Render extends IDL.Visitor<null, InputBox> {
   constructor(defaultValue?: unknown) {
     super();
     this.#defaultValue = defaultValue;
+    
+
   }
   public visitType<T>(t: IDL.Type<T>, d: null): InputBox {
     const input = document.createElement('input');
@@ -41,9 +43,11 @@ export class Render extends IDL.Visitor<null, InputBox> {
     return inputBox(t, { input, defaultValue: this.#defaultValue });
   }
   public visitNull(t: IDL.NullClass, d: null): InputBox {
+    
     return inputBox(t, {});
   }
   public visitRecord(t: IDL.RecordClass, fields: Array<[string, IDL.Type]>, d: null): InputBox {
+    
     let config = {};
     if (fields.length > 1) {
       const container = document.createElement('div');

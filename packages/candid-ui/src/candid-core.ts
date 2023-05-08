@@ -120,6 +120,10 @@ export abstract class InputForm {
   }
   public render(dom: HTMLElement): void {
     if (this.ui.open && this.ui.event) {
+      if (this.ui.defaultSubValues) {
+        // @ts-ignore
+        this.ui.open.value = this.ui.defaultSubValues?.length ?? '';
+      }
       dom.appendChild(this.ui.open);
       const form = this;
       // eslint-disable-next-line
@@ -156,8 +160,11 @@ export class RecordForm extends InputForm {
     super(ui);
   }
   public generateForm(): void {
-    this.form = this.fields.map(([key, type]) => {
-      const input = this.ui.render(type, this.ui.defaultSubValues?.[key]);
+    this.form = this.fields.map(([key, type], index) => {
+      const defaultInputValue =
+        this.ui.defaultSubValues?.[key] ?? this.ui.defaultSubValues?.[index]?.[key];
+
+      const input = this.ui.render(type, defaultInputValue);
       // eslint-disable-next-line
       if (this.ui.labelMap && this.ui.labelMap.hasOwnProperty(key)) {
         input.label = this.ui.labelMap[key] + ' ';
