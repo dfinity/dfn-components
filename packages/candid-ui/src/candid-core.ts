@@ -121,8 +121,10 @@ export abstract class InputForm {
   public render(dom: HTMLElement): void {
     if (this.ui.open && this.ui.event) {
       if (this.ui.defaultSubValues) {
-        // @ts-ignore
-        this.ui.open.value = this.ui.defaultSubValues?.length ?? '';
+        if (this.ui.open.nodeName === 'INPUT') {
+          // @ts-ignore
+          this.ui.open.value = this.ui.defaultSubValues?.length ?? '';
+        }
       }
       dom.appendChild(this.ui.open);
       const form = this;
@@ -162,7 +164,8 @@ export class RecordForm extends InputForm {
   public generateForm(): void {
     this.form = this.fields.map(([key, type], index) => {
       const defaultInputValue =
-        this.ui.defaultSubValues?.[key] ?? this.ui.defaultSubValues?.[index]?.[key];
+        this.ui.defaultSubValues?.[key] ??
+        this.ui.defaultSubValues?.[index]?.[key];
 
       const input = this.ui.render(type, defaultInputValue);
       // eslint-disable-next-line
@@ -239,7 +242,8 @@ export class OptionForm extends InputForm {
   }
   public generateForm(): void {
     if ((this.ui.open as HTMLInputElement).checked) {
-      const opt = this.ui.render(this.ty, this.ui.defaultSubValues);
+      // TODO: Here has to be [0]?
+      const opt = this.ui.render(this.ty, this.ui.defaultSubValues?.[0]);
       this.form = [opt];
     } else {
       this.form = [];

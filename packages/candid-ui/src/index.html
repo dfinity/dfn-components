@@ -7,8 +7,8 @@
     <title>Example Candid UI</title>
   </head>
   <body>
-    <section style="height: 80vh; width: 600px; resize: both; overflow: auto">
-      <candid-ui canisterId="fkjyf-lyaaa-aaaab-qah7q-cai" logLevel="debug" methods="whoami">
+    <section >
+      <candid-ui canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai" logLevel="debug" methods='manage_neuron' defaultValues='{"method":"manage_neuron","args":[{"id":[{"id":"2"}],"command":[{"Split":{"amount_e8s":"245324525"}}],"neuron_id_or_subaccount":[{"Subaccount":[132]}]}]}'>
         <h1 slot="title">My title</h1>
         <style slot="styles">
           button:first-child {
@@ -39,6 +39,9 @@
       });
       document.querySelector('candid-ui').addEventListener('request', e => {
         console.log('candid-ui request', e);
+      });
+      document.querySelector('candid-ui').addEventListener('filled', e => {
+        console.log('candid-ui filled', e.detail);
       });
     </script>
   </body>

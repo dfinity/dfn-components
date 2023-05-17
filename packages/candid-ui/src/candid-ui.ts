@@ -11,13 +11,22 @@ const FormConfig: UI.FormConfig = { render: renderInput };
 export const inputBox = (t: IDL.Type, config: Partial<UI.UIConfig>) => {
   return new UI.InputBox(t, { ...InputConfig, ...config });
 };
-export const recordForm = (fields: Array<[string, IDL.Type]>, config: Partial<UI.FormConfig>) => {
+export const recordForm = (
+  fields: Array<[string, IDL.Type]>,
+  config: Partial<UI.FormConfig>
+) => {
   return new UI.RecordForm(fields, { ...FormConfig, ...config });
 };
-export const tupleForm = (components: IDL.Type[], config: Partial<UI.FormConfig>) => {
+export const tupleForm = (
+  components: IDL.Type[],
+  config: Partial<UI.FormConfig>
+) => {
   return new UI.TupleForm(components, { ...FormConfig, ...config });
 };
-export const variantForm = (fields: Array<[string, IDL.Type]>, config: Partial<UI.FormConfig>) => {
+export const variantForm = (
+  fields: Array<[string, IDL.Type]>,
+  config: Partial<UI.FormConfig>
+) => {
   return new UI.VariantForm(fields, { ...FormConfig, ...config });
 };
 export const optForm = (ty: IDL.Type, config: Partial<UI.FormConfig>) => {
@@ -29,12 +38,10 @@ export const vecForm = (ty: IDL.Type, config: Partial<UI.FormConfig>) => {
 
 export class Render extends IDL.Visitor<null, InputBox> {
   #defaultValue: any;
-  
+
   constructor(defaultValue?: unknown) {
     super();
     this.#defaultValue = defaultValue;
-    
-
   }
   public visitType<T>(t: IDL.Type<T>, d: null): InputBox {
     const input = document.createElement('input');
@@ -43,11 +50,13 @@ export class Render extends IDL.Visitor<null, InputBox> {
     return inputBox(t, { input, defaultValue: this.#defaultValue });
   }
   public visitNull(t: IDL.NullClass, d: null): InputBox {
-    
-    return inputBox(t, {});
+    return inputBox(t, { defaultValue: this.#defaultValue });
   }
-  public visitRecord(t: IDL.RecordClass, fields: Array<[string, IDL.Type]>, d: null): InputBox {
-    
+  public visitRecord(
+    t: IDL.RecordClass,
+    fields: Array<[string, IDL.Type]>,
+    d: null
+  ): InputBox {
     let config = {};
     if (fields.length > 1) {
       const container = document.createElement('div');
@@ -57,14 +66,14 @@ export class Render extends IDL.Visitor<null, InputBox> {
 
     // We are passing sub values here as the form will have multiple fields
     // @ts-ignore
-    config.defaultSubValues = this.#defaultValue
+    config.defaultSubValues = this.#defaultValue;
     const form = recordForm(fields, config);
     return inputBox(t, { form, defaultValue: this.#defaultValue });
   }
   public visitTuple<T extends any[]>(
     t: IDL.TupleClass<T>,
     components: IDL.Type[],
-    d: null,
+    d: null
   ): InputBox {
     let config = {};
     if (components.length > 1) {
@@ -76,30 +85,36 @@ export class Render extends IDL.Visitor<null, InputBox> {
     const form = tupleForm(components, config);
     return inputBox(t, { form });
   }
-  public visitVariant(t: IDL.VariantClass, fields: Array<[string, IDL.Type]>, d: null): InputBox {
+  public visitVariant(
+    t: IDL.VariantClass,
+    fields: Array<[string, IDL.Type]>,
+    d: null
+  ): InputBox {
     const select = document.createElement('select');
     for (const [key, type] of fields) {
       const option = new Option(key);
       select.add(option);
     }
     select.selectedIndex = 0;
-    select.classList.add("open");
-    
+    select.classList.add('open', 'test');
+
     const uiConfig = {
       form: {
         open: select,
-        event: "change",
+        event: 'change',
         defaultSubValues: undefined,
       },
-      defaultValue: undefined
+      defaultValue: undefined,
     };
 
-    if(this.#defaultValue) {
+    if (this.#defaultValue) {
       const [selectedVariantKey] = Object.keys(this.#defaultValue);
       if (selectedVariantKey) {
-        const index = fields.findIndex(([fieldKey]) => fieldKey == selectedVariantKey)
-        if(!isNaN(index)) {
-          select.selectedIndex = index;
+        const index = fields.findIndex(
+          ([fieldKey]) => fieldKey == selectedVariantKey
+        );
+        if (!isNaN(index)) {
+          uiConfig.form.open.selectedIndex = index;
           uiConfig.defaultValue = this.#defaultValue[selectedVariantKey];
           uiConfig.form.defaultSubValues =
             this.#defaultValue[selectedVariantKey];
@@ -114,10 +129,23 @@ export class Render extends IDL.Visitor<null, InputBox> {
     checkbox.type = 'checkbox';
     checkbox.classList.add('open');
 
-    if(this.#defaultValue) 
+    if (this.#defaultValue) {
       checkbox.checked = true;
 
-    const form = optForm(ty, { open: checkbox, event: 'change', defaultSubValues: this.#defaultValue });
+      // const fields = ty._fields;
+      // if (fields?.length) {
+      //   const [selectedVariantKey] = Object.keys(this.#defaultValue?.[0]);
+      //   checkbox.selectedIndex =
+      //     fields.findIndex(([field]) => field == selectedVariantKey) ?? 1;
+      // }
+    }
+    //checkbox.selectedIndex = 3;
+
+    const form = optForm(ty, {
+      open: checkbox,
+      event: 'change',
+      defaultSubValues: this.#defaultValue,
+    });
     return inputBox(t, { form });
   }
   public visitVec<T>(t: IDL.VecClass<T>, ty: IDL.Type<T>, d: null): InputBox {
@@ -129,16 +157,24 @@ export class Render extends IDL.Visitor<null, InputBox> {
     len.placeholder = 'len';
     len.classList.add('open');
 
-    if(this.#defaultValue) {
-      len.value = this.#defaultValue
+    if (this.#defaultValue) {
+      len.value = this.#defaultValue;
     }
-
     const container = document.createElement('div');
     container.classList.add('popup-form');
-    const form = vecForm(ty, { open: len, event: 'change', container, defaultSubValues: this.#defaultValue });
+    const form = vecForm(ty, {
+      open: len,
+      event: 'change',
+      container,
+      defaultSubValues: this.#defaultValue,
+    });
     return inputBox(t, { form });
   }
-  public visitRec<T>(t: IDL.RecClass<T>, ty: IDL.ConstructType<T>, d: null): InputBox {
+  public visitRec<T>(
+    t: IDL.RecClass<T>,
+    ty: IDL.ConstructType<T>,
+    d: null
+  ): InputBox {
     return renderInput(ty);
   }
 }
@@ -278,7 +314,11 @@ class RenderValue extends IDL.Visitor<ValueConfig, void> {
   public visitText(t: IDL.TextClass, d: ValueConfig) {
     (d.input.ui.input as HTMLInputElement).value = d.value;
   }
-  public visitRec<T>(t: IDL.RecClass<T>, ty: IDL.ConstructType<T>, d: ValueConfig) {
+  public visitRec<T>(
+    t: IDL.RecClass<T>,
+    ty: IDL.ConstructType<T>,
+    d: ValueConfig
+  ) {
     renderValue(ty, d.input, d.value);
   }
   public visitOpt<T>(t: IDL.OptClass<T>, ty: IDL.Type<T>, d: ValueConfig) {
@@ -292,19 +332,31 @@ class RenderValue extends IDL.Visitor<ValueConfig, void> {
       renderValue(ty, form.form[0], d.value[0]);
     }
   }
-  public visitRecord(t: IDL.RecordClass, fields: Array<[string, IDL.Type]>, d: ValueConfig) {
+  public visitRecord(
+    t: IDL.RecordClass,
+    fields: Array<[string, IDL.Type]>,
+    d: ValueConfig
+  ) {
     const form = d.input.ui.form!;
     fields.forEach(([key, type], i) => {
       renderValue(type, form.form[i], d.value[key]);
     });
   }
-  public visitTuple<T extends any[]>(t: IDL.TupleClass<T>, components: IDL.Type[], d: ValueConfig) {
+  public visitTuple<T extends any[]>(
+    t: IDL.TupleClass<T>,
+    components: IDL.Type[],
+    d: ValueConfig
+  ) {
     const form = d.input.ui.form!;
     components.forEach((type, i) => {
       renderValue(type, form.form[i], d.value[i]);
     });
   }
-  public visitVariant(t: IDL.VariantClass, fields: Array<[string, IDL.Type]>, d: ValueConfig) {
+  public visitVariant(
+    t: IDL.VariantClass,
+    fields: Array<[string, IDL.Type]>,
+    d: ValueConfig
+  ) {
     const form = d.input.ui.form!;
     const selected = Object.entries(d.value)[0];
     fields.forEach(([key, type], i) => {
