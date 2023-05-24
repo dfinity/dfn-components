@@ -15,19 +15,12 @@ import { IdbNetworkIds } from './db';
 import { styles } from './styles';
 import { html, stringify } from './utils';
 import type { CanisterIdInput } from './CanisterIdInput';
+import { type Options, type LogLevel, AnonymousAgent } from "./types";
 
 if (!('global' in window)) {
   (window as any).global = window;
 }
 
-class AnonymousAgent extends HttpAgent {}
-
-type LogLevel = 'none' | 'debug';
-
-type DefaultValues = {
-  method: string;
-  args: any;
-};
 export class CandidUI extends HTMLElement {
   #identity?: Identity = new AnonymousIdentity();
   #db?: IdbNetworkIds;
@@ -41,7 +34,7 @@ export class CandidUI extends HTMLElement {
   #methods: string[] = [];
   #isInitialized = false;
   #logLevel: LogLevel = 'none';
-  #defaultValues?: DefaultValues;
+  #options?: Options; 
 
   constructor() {
     super();
@@ -342,11 +335,11 @@ export class CandidUI extends HTMLElement {
         this.#methods = methods;
       }
     }
-    if (this.hasAttribute('defaultValues')) {
-      const defaultValues = this.getAttribute('defaultValues');
-      if (defaultValues) {
-        const parsedDefaultValues = JSON.parse(defaultValues);
-        this.#defaultValues = parsedDefaultValues;
+    if (this.hasAttribute('options')) {
+      const options = this.getAttribute('options');
+      if (options) {
+        const parsedOptions = JSON.parse(options);
+        this.#options = parsedOptions;
       }
     }
     const titleAttribute = this.getAttribute('title');
@@ -533,36 +526,27 @@ export class CandidUI extends HTMLElement {
         });
 
         for (const [name, func] of methods) {
-          const { method, args } = this.#defaultValues || {};
-          if (method == name)
-            renderMethod(
-              actor,
-              name,
-              func,
-              shadowRoot,
-              async () => undefined,
-              args
-            );
-          else
-            renderMethod(actor, name, func, shadowRoot, async () => undefined);
+          renderMethod(
+            actor,
+            name,
+            func,
+            shadowRoot,
+            async () => undefined,
+            this.#options
+          );
         }
         return;
       } else {
         this.#methods = sortedMethods.map(([name]) => name);
 
         for (const [name, func] of sortedMethods) {
-          const { method, args } = this.#defaultValues || {};
-          if (method == name)
-            renderMethod(
-              actor,
-              name,
-              func,
-              shadowRoot,
-              async () => undefined,
-              args
-            );
-          else
-            renderMethod(actor, name, func, shadowRoot, async () => undefined);
+          renderMethod(
+            actor,
+            name,
+            func,
+            shadowRoot,
+            async () => undefined,
+            this.#options)
         }
       }
     } catch (e: unknown) {

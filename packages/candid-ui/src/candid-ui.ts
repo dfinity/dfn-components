@@ -81,7 +81,8 @@ export class Render extends IDL.Visitor<null, InputBox> {
       container.classList.add('popup-form');
       config = { container };
     }
-    // TODO: default value here
+    // @ts-ignore
+    config.defaultSubValues = this.#defaultValue;
     const form = tupleForm(components, config);
     return inputBox(t, { form });
   }
@@ -96,7 +97,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
       select.add(option);
     }
     select.selectedIndex = 0;
-    select.classList.add('open', 'test');
+    select.classList.add('open');
 
     const uiConfig = {
       form: {
@@ -131,15 +132,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
 
     if (this.#defaultValue) {
       checkbox.checked = true;
-
-      // const fields = ty._fields;
-      // if (fields?.length) {
-      //   const [selectedVariantKey] = Object.keys(this.#defaultValue?.[0]);
-      //   checkbox.selectedIndex =
-      //     fields.findIndex(([field]) => field == selectedVariantKey) ?? 1;
-      // }
     }
-    //checkbox.selectedIndex = 3;
 
     const form = optForm(ty, {
       open: checkbox,
@@ -162,6 +155,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
     }
     const container = document.createElement('div');
     container.classList.add('popup-form');
+
     const form = vecForm(ty, {
       open: len,
       event: 'change',
@@ -175,7 +169,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
     ty: IDL.ConstructType<T>,
     d: null
   ): InputBox {
-    return renderInput(ty);
+    return renderInput(ty, this.#defaultValue);
   }
 }
 

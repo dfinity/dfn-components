@@ -125,6 +125,10 @@ export abstract class InputForm {
           // @ts-ignore
           this.ui.open.value = this.ui.defaultSubValues?.length ?? '';
         }
+        // else if(this.ui.open.nodeName === 'SELECT') {
+        //   // @ts-ignore
+        //   this.ui.open.selectedIndex = 1;
+        // }
       }
       dom.appendChild(this.ui.open);
       const form = this;
@@ -270,6 +274,7 @@ export class VecForm extends InputForm {
     const len = +(this.ui.open as HTMLInputElement).value;
     this.form = [];
     for (let i = 0; i < len; i++) {
+      console.log('generating a new input for form', this)
       const t = this.ui.render(this.ty, this.ui.defaultSubValues?.[i]);
       this.form.push(t);
     }

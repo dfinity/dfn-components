@@ -4,6 +4,7 @@ import { InputBox } from './candid-core';
 import { renderInput, renderValue } from './candid-ui';
 import { Principal } from '@dfinity/principal';
 import { stringify } from './utils';
+import { type Options } from './types';
 
 const names: Record<number, string> = {};
 
@@ -13,8 +14,6 @@ declare global {
     flamegraph: any;
   }
 }
-
-export type DefaultArgs = any;
 
 /**
  * Render a method of a canister.
@@ -30,14 +29,18 @@ export function renderMethod(
   idlFunc: IDL.FuncClass,
   root: ShadowRoot,
   profiler: any,
-  defaultArgs?: DefaultArgs
+  options?: Options
 ) {
+  const { method, args } = options?.defaultValues || {};
+  const defaultArgs = method == name ? args : undefined;
+
   const item = document.createElement('li');
   item.id = name;
 
   const sig = document.createElement('div');
   sig.className = 'signature';
   sig.innerHTML = `<b>${name}</b>: ${idlFunc.display()}`;
+  if (options?.hideMethodsIdl) sig.innerHTML = `<b>${name}</b>`;
   item.appendChild(sig);
 
   const methodListItem = document.createElement('li');
