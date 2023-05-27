@@ -199,8 +199,9 @@ export class TupleForm extends InputForm {
     super(ui);
   }
   public generateForm(): void {
-    this.form = this.components.map(type => {
-      const input = this.ui.render(type, 'testTuple');
+    this.form = this.components.map((type, index) => {
+      const defaultInputValue = this.ui.defaultSubValues?.[index];
+      const input = this.ui.render(type, defaultInputValue);
       return input;
     });
   }
