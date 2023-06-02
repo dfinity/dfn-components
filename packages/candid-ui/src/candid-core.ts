@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IDL } from '@dfinity/candid';
+import { IDL } from "@dfinity/candid";
 
 // tslint:disable:max-classes-per-file
 
@@ -30,20 +30,20 @@ export class InputBox {
   public value: any = undefined;
 
   constructor(public idl: IDL.Type, public ui: UIConfig) {
-    const status = document.createElement('span');
-    status.className = 'status';
+    const status = document.createElement("span");
+    status.className = "status";
     this.status = status;
 
     if (ui.input) {
-      ui.input.addEventListener('blur', () => {
-        if ((ui.input as HTMLInputElement).value === '') {
+      ui.input.addEventListener("blur", () => {
+        if ((ui.input as HTMLInputElement).value === "") {
           return;
         }
         this.parse();
       });
-      ui.input.addEventListener('input', () => {
-        status.style.display = 'none';
-        ui.input!.classList.remove('reject');
+      ui.input.addEventListener("input", () => {
+        status.style.display = "none";
+        ui.input!.classList.remove("reject");
       });
     }
   }
@@ -63,17 +63,15 @@ export class InputBox {
       try {
         const value = this.ui.parse(this.idl, config, input.value);
         if (!this.idl.covariant(value)) {
-          throw new Error(
-            `${input.value} is not of type ${this.idl.display()}`
-          );
+          throw new Error(`${input.value} is not of type ${this.idl.display()}`);
         }
-        this.status.style.display = 'none';
+        this.status.style.display = "none";
         this.value = value;
         return value;
       } catch (err) {
-        input.classList.add('reject');
-        this.status.style.display = 'block';
-        this.status.innerHTML = 'InputError: ' + (err as Error).message;
+        input.classList.add("reject");
+        this.status.style.display = "block";
+        this.status.innerHTML = "InputError: " + (err as Error).message;
         this.value = undefined;
         return undefined;
       }
@@ -81,9 +79,9 @@ export class InputBox {
     return null;
   }
   public render(dom: HTMLElement): void {
-    const container = document.createElement('span');
+    const container = document.createElement("span");
     if (this.label) {
-      const label = document.createElement('label');
+      const label = document.createElement("label");
       label.innerText = this.label;
       container.appendChild(label);
     }
@@ -121,9 +119,9 @@ export abstract class InputForm {
   public render(dom: HTMLElement): void {
     if (this.ui.open && this.ui.event) {
       if (this.ui.defaultSubValues) {
-        if (this.ui.open.nodeName === 'INPUT') {
+        if (this.ui.open.nodeName === "INPUT") {
           // @ts-ignore
-          this.ui.open.value = this.ui.defaultSubValues?.length ?? '';
+          this.ui.open.value = this.ui.defaultSubValues?.length ?? "";
         }
         // else if(this.ui.open.nodeName === 'SELECT') {
         //   // @ts-ignore
@@ -139,7 +137,7 @@ export abstract class InputForm {
         }
         if (form.ui.container) {
           // Remove old form
-          form.ui.container.innerHTML = '';
+          form.ui.container.innerHTML = "";
         } else {
           const oldContainer = form.ui.open!.nextElementSibling;
           if (oldContainer) {
@@ -167,16 +165,14 @@ export class RecordForm extends InputForm {
   }
   public generateForm(): void {
     this.form = this.fields.map(([key, type], index) => {
-      const defaultInputValue =
-        this.ui.defaultSubValues?.[key] ??
-        this.ui.defaultSubValues?.[index]?.[key];
+      const defaultInputValue = this.ui.defaultSubValues?.[key] ?? this.ui.defaultSubValues?.[index]?.[key];
 
       const input = this.ui.render(type, defaultInputValue);
       // eslint-disable-next-line
       if (this.ui.labelMap && this.ui.labelMap.hasOwnProperty(key)) {
-        input.label = this.ui.labelMap[key] + ' ';
+        input.label = this.ui.labelMap[key] + " ";
       } else {
-        input.label = key + ' ';
+        input.label = key + " ";
       }
       return input;
     });
@@ -275,7 +271,6 @@ export class VecForm extends InputForm {
     const len = +(this.ui.open as HTMLInputElement).value;
     this.form = [];
     for (let i = 0; i < len; i++) {
-      console.log('generating a new input for form', this)
       const t = this.ui.render(this.ty, this.ui.defaultSubValues?.[i]);
       this.form.push(t);
     }
