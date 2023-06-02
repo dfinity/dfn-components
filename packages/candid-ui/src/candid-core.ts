@@ -123,10 +123,6 @@ export abstract class InputForm {
           // @ts-ignore
           this.ui.open.value = this.ui.defaultSubValues?.length ?? "";
         }
-        // else if(this.ui.open.nodeName === 'SELECT') {
-        //   // @ts-ignore
-        //   this.ui.open.selectedIndex = 1;
-        // }
       }
       dom.appendChild(this.ui.open);
       const form = this;
