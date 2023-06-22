@@ -3,7 +3,8 @@ import { IDL } from '@dfinity/candid';
 import { InputBox } from './candid-core';
 import { renderInput, renderValue } from './candid-ui';
 import { Principal } from '@dfinity/principal';
-import { stringify } from "./utils";
+import { stringify } from './utils';
+import { type Options } from './types';
 
 const names: Record<number, string> = {};
 
@@ -28,13 +29,18 @@ export function renderMethod(
   idlFunc: IDL.FuncClass,
   root: ShadowRoot,
   profiler: any,
+  options?: Options
 ) {
+  const { method, args } = options?.defaultValues || {};
+  const defaultArgs = method == name ? args : undefined;
+
   const item = document.createElement('li');
   item.id = name;
 
   const sig = document.createElement('div');
   sig.className = 'signature';
   sig.innerHTML = `<b>${name}</b>: ${idlFunc.display()}`;
+  if (options?.hideMethodsIdl) sig.innerHTML = `<b>${name}</b>`;
   item.appendChild(sig);
 
   const methodListItem = document.createElement('li');
@@ -56,7 +62,7 @@ export function renderMethod(
 
   const inputs: InputBox[] = [];
   idlFunc.argTypes.forEach((arg, i) => {
-    const inputbox = renderInput(arg);
+    const inputbox = renderInput(arg, defaultArgs?.[i]);
     inputs.push(inputbox);
     inputbox.render(inputContainer);
   });
@@ -117,7 +123,7 @@ export function renderMethod(
 
     const tStart = Date.now();
 
-    const requestEvent = new CustomEvent("request", {
+    const requestEvent = new CustomEvent('request', {
       detail: {
         method: name,
         args: JSON.parse(stringify(args)),
@@ -129,7 +135,7 @@ export function renderMethod(
 
     const result = await canister[name](...args);
 
-    const repsponseEvent = new CustomEvent("response", {
+    const repsponseEvent = new CustomEvent('response', {
       detail: {
         method: name,
         response: JSON.parse(stringify(result)),
@@ -147,6 +153,7 @@ export function renderMethod(
   const containers: HTMLDivElement[] = [];
   function callAndRender(args: any[]) {
     (async () => {
+      console.log('called function with args', args);
       resultDiv.classList.remove('error');
       const callResult = (await call(args)) as any;
       let result: any;
@@ -162,7 +169,10 @@ export function renderMethod(
       let activeDisplayType = '';
       buttonsArray.forEach(button => {
         if (button.classList.contains('active')) {
-          activeDisplayType = button.classList.value.replace(/btn (.*)-btn.*/g, '$1');
+          activeDisplayType = button.classList.value.replace(
+            /btn (.*)-btn.*/g,
+            '$1'
+          );
         }
       });
       function setContainerVisibility(displayType: string) {
@@ -180,9 +190,13 @@ export function renderMethod(
       containers.push(textContainer);
       textContainer.style.display = setContainerVisibility('text');
       left.appendChild(textContainer);
-      const text = encodeStr(IDL.FuncClass.argsToString(idlFunc.retTypes, result));
+      const text = encodeStr(
+        IDL.FuncClass.argsToString(idlFunc.retTypes, result)
+      );
       textContainer.innerHTML = decodeSpace(text);
-      const showArgs = encodeStr(IDL.FuncClass.argsToString(idlFunc.argTypes, args));
+      const showArgs = encodeStr(
+        IDL.FuncClass.argsToString(idlFunc.argTypes, args)
+      );
       log(decodeSpace(`› ${name}${showArgs}`), root);
       if (profiler && !idlFunc.annotations.includes('query')) {
         await renderFlameGraph(profiler, root);
@@ -213,7 +227,9 @@ export function renderMethod(
       resultDiv.classList.add('error');
       left.innerText = err.message;
       if (profiler && !idlFunc.annotations.includes('query')) {
-        const showArgs = encodeStr(IDL.FuncClass.argsToString(idlFunc.argTypes, args));
+        const showArgs = encodeStr(
+          IDL.FuncClass.argsToString(idlFunc.argTypes, args)
+        );
         log(`[Error] ${name}${showArgs}`, root);
         renderFlameGraph(profiler, root);
       }
@@ -230,7 +246,9 @@ export function renderMethod(
     buttonsArray.forEach(button => button.classList.remove('active'));
     containers.forEach(container => (container.style.display = 'none'));
     target.classList.add('active');
-    (left.querySelector(`.${displayType}-result`) as HTMLDivElement).style.display = 'flex';
+    (
+      left.querySelector(`.${displayType}-result`) as HTMLDivElement
+    ).style.display = 'flex';
   }
   buttonsArray.forEach(button => {
     button.addEventListener('click', selectResultDisplay);
@@ -255,6 +273,38 @@ export function renderMethod(
     callAndRender(args);
     return false;
   });
+
+  const onChangeHandler = () => {
+    const FORM_EVENT_HANDLER_TIMEOUT = 500;
+
+    setTimeout(() => {
+      attachChangeListeners();
+      const args = inputs.map(arg => arg.parse());
+      const isReject = inputs.some(arg => arg.isRejected());
+      if (isReject) {
+        return;
+      }
+
+      const inputEvent = new CustomEvent('filled', {
+        detail: {
+          method: name,
+          args: JSON.parse(stringify(args)),
+        },
+        bubbles: true,
+        composed: true,
+      });
+      root.dispatchEvent(inputEvent);
+    }, FORM_EVENT_HANDLER_TIMEOUT);
+  };
+
+  const attachChangeListeners = () => {
+    const allInputs: Element[] = Array.from(getAllHtmlInputs(name) ?? []);
+    for (const element of allInputs) {
+      element.removeEventListener('input', onChangeHandler);
+      element.addEventListener('input', onChangeHandler);
+    }
+  };
+  attachChangeListeners();
 }
 
 function encodeStr(str: string) {
@@ -289,7 +339,8 @@ export function log(content: Element | string, root: ShadowRoot) {
 
   // scroll into view if line is out of view
   const { top, bottom } = line.getBoundingClientRect();
-  const { top: parentTop, bottom: parentBottom } = outputEl.getBoundingClientRect();
+  const { top: parentTop, bottom: parentBottom } =
+    outputEl.getBoundingClientRect();
   if (top < parentTop || bottom > parentBottom) {
     line.scrollIntoView();
   }
@@ -313,7 +364,9 @@ function decodeProfiling(input: Array<[number, bigint]>) {
         throw new Error('cannot pop empty stack');
       }
       if (pair[0] !== -id) {
-        throw new Error(`Exiting func ${-pair[0]}, but expect to exit func ${id}`);
+        throw new Error(
+          `Exiting func ${-pair[0]}, but expect to exit func ${id}`
+        );
       }
       const name = names[pair[0]] || `func_${pair[0]}`;
       const value = Number(cycles - pair[1]);
@@ -368,6 +421,13 @@ function postToPlayground(id: Principal) {
   };
   (window.parent || window.opener)?.postMessage(
     `CandidUI${stringify(message)}`,
-    "*"
+    '*'
   );
+}
+
+function getAllHtmlInputs(methodName: string) {
+  const shadowRoot = document.querySelector('candid-ui')?.shadowRoot;
+  const methodContainer = shadowRoot?.querySelector(`li#${methodName}`);
+  const inputs = methodContainer?.querySelectorAll('input, select');
+  return inputs;
 }

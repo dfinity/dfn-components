@@ -1,6 +1,6 @@
-import { IDL } from '@dfinity/candid';
-import { Principal } from '@dfinity/principal';
-import * as UI from './candid-core';
+import { IDL } from "@dfinity/candid";
+import { Principal } from "@dfinity/principal";
+import * as UI from "./candid-core";
 
 // tslint:disable:max-classes-per-file
 type InputBox = UI.InputBox;
@@ -28,73 +28,120 @@ export const vecForm = (ty: IDL.Type, config: Partial<UI.FormConfig>) => {
 };
 
 export class Render extends IDL.Visitor<null, InputBox> {
+  #defaultValue: any;
+
+  constructor(defaultValue?: unknown) {
+    super();
+    this.#defaultValue = defaultValue;
+  }
   public visitType<T>(t: IDL.Type<T>, d: null): InputBox {
-    const input = document.createElement('input');
-    input.classList.add('argument');
+    const input = document.createElement("input");
+    input.classList.add("argument");
     input.placeholder = t.display();
-    return inputBox(t, { input });
+    return inputBox(t, { input, defaultValue: this.#defaultValue });
   }
   public visitNull(t: IDL.NullClass, d: null): InputBox {
-    return inputBox(t, {});
+    return inputBox(t, { defaultValue: this.#defaultValue });
   }
   public visitRecord(t: IDL.RecordClass, fields: Array<[string, IDL.Type]>, d: null): InputBox {
     let config = {};
     if (fields.length > 1) {
-      const container = document.createElement('div');
-      container.classList.add('popup-form');
+      const container = document.createElement("div");
+      container.classList.add("popup-form");
       config = { container };
     }
+
+    // We are passing sub values here as the form will have multiple fields
+    // @ts-ignore
+    config.defaultSubValues = this.#defaultValue;
     const form = recordForm(fields, config);
-    return inputBox(t, { form });
+    return inputBox(t, { form, defaultValue: this.#defaultValue });
   }
-  public visitTuple<T extends any[]>(
-    t: IDL.TupleClass<T>,
-    components: IDL.Type[],
-    d: null,
-  ): InputBox {
+  public visitTuple<T extends any[]>(t: IDL.TupleClass<T>, components: IDL.Type[], d: null): InputBox {
     let config = {};
     if (components.length > 1) {
-      const container = document.createElement('div');
-      container.classList.add('popup-form');
+      const container = document.createElement("div");
+      container.classList.add("popup-form");
       config = { container };
     }
+    // @ts-ignore
+    config.defaultSubValues = this.#defaultValue;
     const form = tupleForm(components, config);
     return inputBox(t, { form });
   }
   public visitVariant(t: IDL.VariantClass, fields: Array<[string, IDL.Type]>, d: null): InputBox {
-    const select = document.createElement('select');
+    const select = document.createElement("select");
     for (const [key, type] of fields) {
       const option = new Option(key);
       select.add(option);
     }
-    select.selectedIndex = -1;
-    select.classList.add('open');
-    const config: Partial<UI.FormConfig> = { open: select, event: 'change' };
-    const form = variantForm(fields, config);
-    return inputBox(t, { form });
+    select.selectedIndex = 0;
+    select.classList.add("open");
+
+    const uiConfig = {
+      form: {
+        open: select,
+        event: "change",
+        defaultSubValues: undefined,
+      },
+      defaultValue: undefined,
+    };
+
+    if (this.#defaultValue) {
+      const [selectedVariantKey] = Object.keys(this.#defaultValue);
+      if (selectedVariantKey) {
+        const index = fields.findIndex(([fieldKey]) => fieldKey == selectedVariantKey);
+        if (!isNaN(index)) {
+          uiConfig.form.open.selectedIndex = index;
+          uiConfig.defaultValue = this.#defaultValue[selectedVariantKey];
+          uiConfig.form.defaultSubValues = this.#defaultValue[selectedVariantKey];
+        }
+      }
+    }
+    const form = variantForm(fields, uiConfig.form);
+    return inputBox(t, { form, defaultValue: uiConfig.defaultValue });
   }
   public visitOpt<T>(t: IDL.OptClass<T>, ty: IDL.Type<T>, d: null): InputBox {
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.classList.add('open');
-    const form = optForm(ty, { open: checkbox, event: 'change' });
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.classList.add("open");
+
+    if (this.#defaultValue) {
+      checkbox.checked = true;
+    }
+
+    const form = optForm(ty, {
+      open: checkbox,
+      event: "change",
+      defaultSubValues: this.#defaultValue,
+    });
     return inputBox(t, { form });
   }
   public visitVec<T>(t: IDL.VecClass<T>, ty: IDL.Type<T>, d: null): InputBox {
-    const len = document.createElement('input');
-    len.type = 'number';
-    len.min = '0';
-    len.max = '100';
-    len.style.width = '8rem';
-    len.placeholder = 'len';
-    len.classList.add('open');
-    const container = document.createElement('div');
-    container.classList.add('popup-form');
-    const form = vecForm(ty, { open: len, event: 'change', container });
+    const len = document.createElement("input");
+    len.type = "number";
+    len.min = "0";
+    len.max = "100";
+    len.style.width = "8rem";
+    len.placeholder = "len";
+    len.classList.add("open");
+
+    if (this.#defaultValue) {
+      len.value = this.#defaultValue;
+    }
+    const container = document.createElement("div");
+    container.classList.add("popup-form");
+
+    const form = vecForm(ty, {
+      open: len,
+      event: "change",
+      container,
+      defaultSubValues: this.#defaultValue,
+    });
     return inputBox(t, { form });
   }
   public visitRec<T>(t: IDL.RecClass<T>, ty: IDL.ConstructType<T>, d: null): InputBox {
-    return renderInput(ty);
+    return renderInput(ty, this.#defaultValue);
   }
 }
 
@@ -103,10 +150,10 @@ class Parse extends IDL.Visitor<string, any> {
     return null;
   }
   public visitBool(t: IDL.BoolClass, v: string): boolean {
-    if (v === 'true') {
+    if (v === "true") {
       return true;
     }
-    if (v === 'false') {
+    if (v === "false") {
       return false;
     }
     throw new Error(`Cannot parse ${v} as boolean`);
@@ -141,7 +188,7 @@ class Parse extends IDL.Visitor<string, any> {
     return Principal.fromText(v);
   }
   public visitFunc(t: IDL.FuncClass, v: string): [Principal, string] {
-    const x = v.split('.', 2);
+    const x = v.split(".", 2);
     return [Principal.fromText(x[0]), x[1]];
   }
 }
@@ -192,7 +239,7 @@ class Random extends IDL.Visitor<string, any> {
 }
 
 function parsePrimitive(t: IDL.Type, config: UI.ParseConfig, d: string) {
-  if (config.random && d === '') {
+  if (config.random && d === "") {
     return t.accept(new Random(), d);
   } else {
     return t.accept(new Parse(), d);
@@ -204,8 +251,8 @@ function parsePrimitive(t: IDL.Type, config: UI.ParseConfig, d: string) {
  * @param t an IDL type
  * @returns an input for that type
  */
-export function renderInput(t: IDL.Type): InputBox {
-  return t.accept(new Render(), null);
+export function renderInput(t: IDL.Type, defaultValue?: any): InputBox {
+  return t.accept(new Render(defaultValue), null);
 }
 
 interface ValueConfig {
