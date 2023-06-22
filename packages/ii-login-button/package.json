@@ -1,6 +1,6 @@
 {
   "name": "@dfinity/ii-login-button",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Web component library to drop into your applications",
   "unpkg": "./dist/auto.js",
   "type": "module",
