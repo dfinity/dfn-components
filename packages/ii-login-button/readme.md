@@ -32,7 +32,7 @@ Once the component is loaded, you can listen for the `ready` event, and set up m
 ```ts
 const loginButton = document.querySelector("ii-login-button");
 
-const prepareLoginBotton = async (loginCallback) => {
+const prepareLoginButton = async (loginCallback) => {
   if (!customElements.get("ii-login-button")) {
     customElements.define("ii-login-button", LoginButton);
   }
@@ -59,7 +59,7 @@ const prepareLoginBotton = async (loginCallback) => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await prepareLoginBotton(() => {
+  await prepareLoginButton(() => {
     // Do something after login
   });
 });
