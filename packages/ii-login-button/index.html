@@ -8,6 +8,15 @@
   </head>
   <body>
     <ii-login-button logo-right></ii-login-button>
-    <script src="src/index.ts" type="module"></script>
+    <!-- <script src="src/index.ts" type="module"></script> -->
+    <!-- <script src="dist/auto.js" type="module"></script> -->
+    <script type="module">
+      import("./dist/esm/index.js").then(({ defineElement, IILoginButton }) => {
+        console.log("ii-login-button loaded", IILoginButton)
+        defineElement();
+      }
+      );
+    </script>
+
   </body>
 </html>

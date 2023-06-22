@@ -2,10 +2,19 @@
   "name": "@dfinity/ii-login-button",
   "version": "0.0.3",
   "description": "Web component library to drop into your applications",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "unpkg": "./dist/auto.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/esm/index.js"
+    },
+    "./auto": "./dist/auto.js",
+    "./auto.js": "./dist/auto.js"
+  },
   "scripts": {
-    "build": "tsc",
+    "start": "vite .",
+    "build": "webpack; tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -28,12 +37,12 @@
   "dependencies": {
     "assert": "^2.0.0",
     "bip39": "^3.0.4",
-    "bs58check": "^2.1.2"
+    "bs58check": "^2.1.2",
+    "buffer": "^6.0.3"
   },
   "peerDependencies": {
     "@dfinity/agent": "0.x",
     "@dfinity/auth-client": "0.x",
-    "@dfinity/authentication": "0.x",
     "@dfinity/candid": "0.x",
     "@dfinity/identity": "0.x",
     "@dfinity/nns": "^0.8.1",
