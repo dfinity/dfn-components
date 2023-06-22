@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IDL } from '@dfinity/candid';
+import { IDL } from "@dfinity/candid";
 
 // tslint:disable:max-classes-per-file
 
@@ -11,6 +11,7 @@ export interface ParseConfig {
 export interface UIConfig {
   input?: HTMLElement;
   form?: InputForm;
+  defaultValue?: string | number;
   parse(t: IDL.Type, config: ParseConfig, v: string): any;
 }
 
@@ -19,7 +20,8 @@ export interface FormConfig {
   event?: string;
   labelMap?: Record<string, string>;
   container?: HTMLElement;
-  render(t: IDL.Type): InputBox;
+  defaultSubValues?: any;
+  render(t: IDL.Type, defaultValue?: any): InputBox;
 }
 
 export class InputBox {
@@ -28,20 +30,20 @@ export class InputBox {
   public value: any = undefined;
 
   constructor(public idl: IDL.Type, public ui: UIConfig) {
-    const status = document.createElement('span');
-    status.className = 'status';
+    const status = document.createElement("span");
+    status.className = "status";
     this.status = status;
 
     if (ui.input) {
-      ui.input.addEventListener('blur', () => {
-        if ((ui.input as HTMLInputElement).value === '') {
+      ui.input.addEventListener("blur", () => {
+        if ((ui.input as HTMLInputElement).value === "") {
           return;
         }
         this.parse();
       });
-      ui.input.addEventListener('input', () => {
-        status.style.display = 'none';
-        ui.input!.classList.remove('reject');
+      ui.input.addEventListener("input", () => {
+        status.style.display = "none";
+        ui.input!.classList.remove("reject");
       });
     }
   }
@@ -63,13 +65,13 @@ export class InputBox {
         if (!this.idl.covariant(value)) {
           throw new Error(`${input.value} is not of type ${this.idl.display()}`);
         }
-        this.status.style.display = 'none';
+        this.status.style.display = "none";
         this.value = value;
         return value;
       } catch (err) {
-        input.classList.add('reject');
-        this.status.style.display = 'block';
-        this.status.innerHTML = 'InputError: ' + (err as Error).message;
+        input.classList.add("reject");
+        this.status.style.display = "block";
+        this.status.innerHTML = "InputError: " + (err as Error).message;
         this.value = undefined;
         return undefined;
       }
@@ -77,13 +79,18 @@ export class InputBox {
     return null;
   }
   public render(dom: HTMLElement): void {
-    const container = document.createElement('span');
+    const container = document.createElement("span");
     if (this.label) {
-      const label = document.createElement('label');
+      const label = document.createElement("label");
       label.innerText = this.label;
       container.appendChild(label);
     }
+
     if (this.ui.input) {
+      if (this.ui.defaultValue) {
+        // @ts-ignore
+        this.ui.input.value = this.ui.defaultValue.toString();
+      }
       container.appendChild(this.ui.input);
       container.appendChild(this.status);
     }
@@ -111,13 +118,22 @@ export abstract class InputForm {
   }
   public render(dom: HTMLElement): void {
     if (this.ui.open && this.ui.event) {
+      if (this.ui.defaultSubValues) {
+        if (this.ui.open.nodeName === "INPUT") {
+          // @ts-ignore
+          this.ui.open.value = this.ui.defaultSubValues?.length ?? "";
+        }
+      }
       dom.appendChild(this.ui.open);
       const form = this;
       // eslint-disable-next-line
-      form.ui.open!.addEventListener(form.ui.event!, () => {
-        // Remove old form
+      const handleChangeEvent = (_?: Event, isInitialRender = false) => {
+        if (!isInitialRender) {
+          delete this.ui.defaultSubValues;
+        }
         if (form.ui.container) {
-          form.ui.container.innerHTML = '';
+          // Remove old form
+          form.ui.container.innerHTML = "";
         } else {
           const oldContainer = form.ui.open!.nextElementSibling;
           if (oldContainer) {
@@ -127,7 +143,11 @@ export abstract class InputForm {
         // Render form
         form.generateForm();
         form.renderForm(dom);
-      });
+      };
+      form.ui.open!.addEventListener(form.ui.event!, handleChangeEvent);
+      // Here we 'trigger' an initial change event to create a cascade render
+      // We will need to pass the default value here to the sub-forms created
+      handleChangeEvent(undefined, true);
     } else {
       this.generateForm();
       this.renderForm(dom);
@@ -140,13 +160,15 @@ export class RecordForm extends InputForm {
     super(ui);
   }
   public generateForm(): void {
-    this.form = this.fields.map(([key, type]) => {
-      const input = this.ui.render(type);
+    this.form = this.fields.map(([key, type], index) => {
+      const defaultInputValue = this.ui.defaultSubValues?.[key] ?? this.ui.defaultSubValues?.[index]?.[key];
+
+      const input = this.ui.render(type, defaultInputValue);
       // eslint-disable-next-line
       if (this.ui.labelMap && this.ui.labelMap.hasOwnProperty(key)) {
-        input.label = this.ui.labelMap[key] + ' ';
+        input.label = this.ui.labelMap[key] + " ";
       } else {
-        input.label = key + ' ';
+        input.label = key + " ";
       }
       return input;
     });
@@ -169,8 +191,9 @@ export class TupleForm extends InputForm {
     super(ui);
   }
   public generateForm(): void {
-    this.form = this.components.map(type => {
-      const input = this.ui.render(type);
+    this.form = this.components.map((type, index) => {
+      const defaultInputValue = this.ui.defaultSubValues?.[index];
+      const input = this.ui.render(type, defaultInputValue);
       return input;
     });
   }
@@ -194,7 +217,7 @@ export class VariantForm extends InputForm {
   public generateForm(): void {
     const index = (this.ui.open as HTMLSelectElement).selectedIndex;
     const [_, type] = this.fields[index];
-    const variant = this.ui.render(type);
+    const variant = this.ui.render(type, this.ui.defaultSubValues);
     this.form = [variant];
   }
   public parse(config: ParseConfig): Record<string, any> | undefined {
@@ -216,7 +239,8 @@ export class OptionForm extends InputForm {
   }
   public generateForm(): void {
     if ((this.ui.open as HTMLInputElement).checked) {
-      const opt = this.ui.render(this.ty);
+      // TODO: Here has to be [0]?
+      const opt = this.ui.render(this.ty, this.ui.defaultSubValues?.[0]);
       this.form = [opt];
     } else {
       this.form = [];
@@ -243,7 +267,7 @@ export class VecForm extends InputForm {
     const len = +(this.ui.open as HTMLInputElement).value;
     this.form = [];
     for (let i = 0; i < len; i++) {
-      const t = this.ui.render(this.ty);
+      const t = this.ui.render(this.ty, this.ui.defaultSubValues?.[i]);
       this.form.push(t);
     }
   }

@@ -40,6 +40,9 @@
       document.querySelector('candid-ui').addEventListener('request', e => {
         console.log('candid-ui request', e);
       });
+      document.querySelector('candid-ui').addEventListener('filled', e => {
+        console.log('candid-ui input filled', e);
+      });
     </script>
   </body>
 </html>
