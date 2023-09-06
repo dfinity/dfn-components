@@ -27,7 +27,7 @@ export class CandidUI extends HTMLElement {
   #agent?: HttpAgent;
   #canisterId?: Principal;
   #isLocal = false;
-  #host?: string;
+  #host: string = 'https://icp-api.io';
   #title = 'Candid UI';
   #description = 'Browse and test your API with our visual web interface.';
   // restricted set of methods to display
@@ -401,29 +401,30 @@ export class CandidUI extends HTMLElement {
     ) {
       console.groupCollapsed('Trying well known local hosts');
       try {
-        const proxyResponse = await (await fetch('/api/v2')).text();
-        if (proxyResponse.startsWith('Unexpected GET')) {
+        const proxyResponse = await (await fetch('/api/v2/status')).text();
+        if (proxyResponse) {
           host = location.origin;
         }
       } catch (_) {}
       try {
         const defaultLocalResponse = await (
-          await fetch('http://127.0.0.1:4943/api/v2')
+          await fetch('http://127.0.0.1:4943/api/v2/status')
         ).text();
         console.log(defaultLocalResponse);
-        if (defaultLocalResponse.startsWith('Unexpected GET')) {
+        if (defaultLocalResponse) {
           host = `http://127.0.0.1:4943`;
         }
       } catch (_) {}
       try {
         const systemLocalResponse = await (
-          await fetch('http://127.0.0.1:8080/api/v2')
+          await fetch('http://127.0.0.1:8080/api/v2/status')
         ).text();
 
-        if (systemLocalResponse.startsWith('Unexpected GET')) {
+        if (systemLocalResponse) {
           host = `http://127.0.0.1:8080`;
         }
       } catch (_) {}
+      console.log(host);
       console.groupEnd();
       if (this.#logLevel === 'debug') {
         if (host) {

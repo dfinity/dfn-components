@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "vite ./src",
-    "build": "webpack; tsc",
+    "build": "webpack; tsc; vite build ./src",
     "analyze-build": "webpack --profile --json; webpack-bundle-analyzer",
     "test": "vitest"
   },
