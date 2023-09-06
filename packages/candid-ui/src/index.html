@@ -7,42 +7,15 @@
     <title>Example Candid UI</title>
   </head>
   <body>
-    <section style="height: 80vh; width: 600px; resize: both; overflow: auto">
-      <candid-ui canisterId="fkjyf-lyaaa-aaaab-qah7q-cai" logLevel="debug" methods="whoami">
-        <h1 slot="title">My title</h1>
-        <style slot="styles">
-          button:first-child {
-            background-color: pink;
-          }
-        </style>
-      </candid-ui>
-
-      <!--<candid-ui host="https://icp-api.io" canisterId="fkjyf-lyaaa-aaaab-qah7q-cai"></candid-ui>-->
-    </section>
+    <candid-ui></candid-ui>
+    <script src="./auto.ts" type="module"></script>
     <script>
-      /** time to load the candid ui */
-
-      console.time('candid-ui import');
-      import('./CandidUI.ts').then(({ CandidUI, defineElement }) => {
-        defineElement();
-        console.timeEnd('candid-ui import');
-      });
-
-      document.querySelector('candid-ui').addEventListener('ready', () => {
-        console.log('candid-ui ready');
-      });
-      document.querySelector('candid-ui').addEventListener('error', e => {
-        console.log('candid-ui error', e);
-      });
-      document.querySelector('candid-ui').addEventListener('response', e => {
-        console.log('candid-ui message', e);
-      });
-      document.querySelector('candid-ui').addEventListener('request', e => {
-        console.log('candid-ui request', e);
-      });
-      document.querySelector('candid-ui').addEventListener('filled', e => {
-        console.log('candid-ui input filled', e);
-      });
+      document.querySelector('candid-ui').addEventListener('ready', ()=>{
+        if(window.location.search.includes('canisterId')) {
+          const canisterId = window.location.search.split('canisterId=')[1]
+          document.querySelector('candid-ui').setAttribute('canisterId', canisterId)
+        }
+      })
     </script>
   </body>
 </html>
