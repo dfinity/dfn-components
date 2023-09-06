@@ -7,7 +7,7 @@
     "demo": {
       "type": "assets",
       "source": [
-        "demo"
+        "src/dist"
       ]
     }
   }
