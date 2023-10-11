@@ -2,6 +2,8 @@
 
 To install, run `npm install @dfinity/ii-login-button`
 
+Check out an example implementation at https://codesandbox.io/s/ii-login-button-fjfmks?file=/src/index.ts
+
 ## IILoginButton
 
 Implements a standardized login button for Internet Identity
