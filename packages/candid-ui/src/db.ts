@@ -5,10 +5,14 @@ type IDBValidKey = string | number | Date | BufferSource | IDBValidKey[];
 const AUTH_DB_NAME = "candid-ui-db";
 const OBJECT_STORE_NAME = "ic-keyval";
 
-const _openDbStore = async (dbName = AUTH_DB_NAME, storeName = OBJECT_STORE_NAME, version: number) => {
+const _openDbStore = async (
+  dbName = AUTH_DB_NAME,
+  storeName = OBJECT_STORE_NAME,
+  version: number
+) => {
   // Clear legacy stored delegations
   return await openDB(dbName, version, {
-    upgrade: database => {
+    upgrade: (database) => {
       database.objectStoreNames;
       if (database.objectStoreNames.contains(storeName)) {
         database.clear(storeName);
@@ -18,15 +22,28 @@ const _openDbStore = async (dbName = AUTH_DB_NAME, storeName = OBJECT_STORE_NAME
   });
 };
 
-async function _getValue<T>(db: Database, storeName: string, key: IDBValidKey): Promise<T | undefined> {
+async function _getValue<T>(
+  db: Database,
+  storeName: string,
+  key: IDBValidKey
+): Promise<T | undefined> {
   return await db.get(storeName, key);
 }
 
-async function _setValue<T>(db: Database, storeName: string, key: IDBValidKey, value: T): Promise<IDBValidKey> {
+async function _setValue<T>(
+  db: Database,
+  storeName: string,
+  key: IDBValidKey,
+  value: T
+): Promise<IDBValidKey> {
   return await db.put(storeName, value, key);
 }
 
-async function _removeValue(db: Database, storeName: string, key: IDBValidKey): Promise<void> {
+async function _removeValue(
+  db: Database,
+  storeName: string,
+  key: IDBValidKey
+): Promise<void> {
   return await db.delete(storeName, key);
 }
 
@@ -51,8 +68,14 @@ export class IdbNetworkIds {
    * @param {DBCreateOptions['version']} options.version version of the database. Increment to safely upgrade
    * @constructs an {@link IdbKeyVal}
    */
-  public static async create(options?: DBCreateOptions): Promise<IdbNetworkIds> {
-    const { dbName = AUTH_DB_NAME, storeName = OBJECT_STORE_NAME, version = 1 } = options ?? {};
+  public static async create(
+    options?: DBCreateOptions
+  ): Promise<IdbNetworkIds> {
+    const {
+      dbName = AUTH_DB_NAME,
+      storeName = OBJECT_STORE_NAME,
+      version = 1,
+    } = options ?? {};
     const db = await _openDbStore(dbName, storeName, version);
     return new IdbNetworkIds(db, storeName);
   }

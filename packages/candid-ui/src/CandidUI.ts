@@ -1,5 +1,13 @@
 /* eslint-disable no-empty */
-import { Actor, ActorSubclass, Agent, AnonymousIdentity, CanisterStatus, HttpAgent, Identity } from "@dfinity/agent";
+import {
+  Actor,
+  ActorSubclass,
+  Agent,
+  AnonymousIdentity,
+  CanisterStatus,
+  HttpAgent,
+  Identity,
+} from "@dfinity/agent";
 import { IDL } from "@dfinity/candid";
 import { Principal } from "@dfinity/principal";
 import { log, renderMethod } from "./renderMethod";
@@ -43,7 +51,7 @@ export class CandidUI extends HTMLElement {
     shadow.appendChild(main);
 
     //  create a database
-    IdbNetworkIds.create().then(db => {
+    IdbNetworkIds.create().then((db) => {
       this.#db = db;
     });
   }
@@ -59,7 +67,14 @@ export class CandidUI extends HTMLElement {
 
   // Values that can be set via attribute
   static get observedAttributes() {
-    return ["canisterid", "defaultValues", "description", "host", "methods", "title"];
+    return [
+      "canisterid",
+      "defaultValues",
+      "description",
+      "host",
+      "methods",
+      "title",
+    ];
   }
   /**
    * setter for host
@@ -221,11 +236,13 @@ export class CandidUI extends HTMLElement {
     this.canisterId = undefined;
     this.removeAttribute("canisterid");
     this.host = undefined;
-    this.#determineHost().then(host => {
+    this.#determineHost().then((host) => {
       this.agent = new AnonymousAgent({ host: host });
     });
     const container = this.shadowRoot?.querySelector("#container");
-    const input = this.shadowRoot?.querySelector("canister-input") as CanisterIdInput | undefined;
+    const input = this.shadowRoot?.querySelector("canister-input") as
+      | CanisterIdInput
+      | undefined;
     if (input) {
       input.canisterId = undefined;
     }
@@ -242,7 +259,7 @@ export class CandidUI extends HTMLElement {
   //   when the custom element is added to the DOM, the connectedCallback() method is called
   #processStyles = async (slot: HTMLSlotElement) => {
     this.#log("process styles");
-    slot.assignedNodes().forEach(node => {
+    slot.assignedNodes().forEach((node) => {
       // copy the styles to the shadow DOM
       if (node instanceof HTMLStyleElement) {
         const styleTag = document.createElement("style");
@@ -279,13 +296,15 @@ export class CandidUI extends HTMLElement {
 
   async connectedCallback() {
     await this.#init();
-    const slot = this.shadowRoot?.querySelector('slot[name="styles"]') as HTMLSlotElement;
+    const slot = this.shadowRoot?.querySelector(
+      'slot[name="styles"]'
+    ) as HTMLSlotElement;
 
     if (slot) {
       this.#processStyles(slot);
     }
 
-    slot?.addEventListener("slotchange", e => {
+    slot?.addEventListener("slotchange", (e) => {
       this.#processStyles(e.target as HTMLSlotElement);
     });
   }
@@ -311,7 +330,7 @@ export class CandidUI extends HTMLElement {
       const methods = this.getAttribute("methods")
         ?.trim()
         .split(",")
-        .map(method => method.trim());
+        .map((method) => method.trim());
       if (methods) {
         this.#methods = methods;
       }
@@ -328,7 +347,10 @@ export class CandidUI extends HTMLElement {
       this.#title = titleAttribute;
     }
     const descriptionAttribute = this.getAttribute("description");
-    if (this.hasAttribute("description") && typeof descriptionAttribute === "string") {
+    if (
+      this.hasAttribute("description") &&
+      typeof descriptionAttribute === "string"
+    ) {
       this.#description = descriptionAttribute;
     }
     if (this.hasAttribute("host")) {
@@ -359,7 +381,10 @@ export class CandidUI extends HTMLElement {
       return false;
     } else if (host && location) {
       // otherwise infer from location
-      return location.href.includes("localhost") || location.href.includes("127.0.0.1");
+      return (
+        location.href.includes("localhost") ||
+        location.href.includes("127.0.0.1")
+      );
     }
 
     return false;
@@ -370,7 +395,10 @@ export class CandidUI extends HTMLElement {
     if (this.#host) return this.#host;
     let host = "";
 
-    if (location.href.includes("localhost") || location.href.includes("127.0.0.1")) {
+    if (
+      location.href.includes("localhost") ||
+      location.href.includes("127.0.0.1")
+    ) {
       console.groupCollapsed("Trying well known local hosts");
       try {
         const proxyResponse = await (await fetch("/api/v2")).text();
@@ -379,14 +407,18 @@ export class CandidUI extends HTMLElement {
         }
       } catch (_) {}
       try {
-        const defaultLocalResponse = await (await fetch("http://127.0.0.1:4943/api/v2")).text();
+        const defaultLocalResponse = await (
+          await fetch("http://127.0.0.1:4943/api/v2")
+        ).text();
         console.log(defaultLocalResponse);
         if (defaultLocalResponse.startsWith("Unexpected GET")) {
           host = `http://127.0.0.1:4943`;
         }
       } catch (_) {}
       try {
-        const systemLocalResponse = await (await fetch("http://127.0.0.1:8080/api/v2")).text();
+        const systemLocalResponse = await (
+          await fetch("http://127.0.0.1:8080/api/v2")
+        ).text();
 
         if (systemLocalResponse.startsWith("Unexpected GET")) {
           host = `http://127.0.0.1:8080`;
@@ -431,7 +463,9 @@ export class CandidUI extends HTMLElement {
     const agent = this.#agent ?? (await this.#determineAgent());
 
     if (!this.#canisterId) return;
-    let candid = await this.#db?.get(stringify({ id: this.#canisterId.toText(), network: this.#host }));
+    let candid = await this.#db?.get(
+      stringify({ id: this.#canisterId.toText(), network: this.#host })
+    );
 
     //   fetch the candid file
     try {
@@ -453,7 +487,10 @@ export class CandidUI extends HTMLElement {
 
       //   save candid file to db
       if (this.#db) {
-        this.#db.set(stringify({ id: this.#canisterId.toText(), network: this.#host }), candid);
+        this.#db.set(
+          stringify({ id: this.#canisterId.toText(), network: this.#host }),
+          candid
+        );
       }
 
       const js = await this.#didToJs(candid as string);
@@ -461,13 +498,16 @@ export class CandidUI extends HTMLElement {
       if (!js) {
         throw new Error("Cannot fetch candid file");
       }
-      const dataUri = "data:text/javascript;charset=utf-8," + encodeURIComponent(js);
+      const dataUri =
+        "data:text/javascript;charset=utf-8," + encodeURIComponent(js);
       const candidScript: any = await eval('import("' + dataUri + '")');
       const actor = Actor.createActor(candidScript.idlFactory, {
         agent: this.#agent,
         canisterId: this.#canisterId,
       });
-      const sortedMethods = Actor.interfaceOf(actor)._fields.sort(([a], [b]) => (a > b ? 1 : -1));
+      const sortedMethods = Actor.interfaceOf(actor)._fields.sort(([a], [b]) =>
+        a > b ? 1 : -1
+      );
 
       const shadowRoot = this.shadowRoot!;
 
@@ -475,7 +515,9 @@ export class CandidUI extends HTMLElement {
 
       //  if methods are specified, only render those
       if (this.#methods?.length) {
-        const methods = sortedMethods.filter(([name]) => this.#methods.includes(name));
+        const methods = sortedMethods.filter(([name]) =>
+          this.#methods.includes(name)
+        );
         // sort methods by this.#methods
         methods.sort(([a], [b]) => {
           const aIndex = this.#methods.indexOf(a);
@@ -484,14 +526,28 @@ export class CandidUI extends HTMLElement {
         });
 
         for (const [name, func] of methods) {
-          renderMethod(actor, name, func, shadowRoot, async () => undefined, this.#options);
+          renderMethod(
+            actor,
+            name,
+            func,
+            shadowRoot,
+            async () => undefined,
+            this.#options
+          );
         }
         return;
       } else {
         this.#methods = sortedMethods.map(([name]) => name);
 
         for (const [name, func] of sortedMethods) {
-          renderMethod(actor, name, func, shadowRoot, async () => undefined, this.#options);
+          renderMethod(
+            actor,
+            name,
+            func,
+            shadowRoot,
+            async () => undefined,
+            this.#options
+          );
         }
       }
     } catch (e: unknown) {
@@ -507,10 +563,20 @@ export class CandidUI extends HTMLElement {
     main.innerHTML = "";
     if (main) {
       const template = document.createElement("template");
-      template.innerHTML = html`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-reboot@4.5.4/reboot.css" />
+      template.innerHTML = html`<link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-reboot@4.5.4/reboot.css"
+        />
         <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css"
+        />
         <style>
           .ic_progress {
             display: block;
@@ -520,7 +586,9 @@ export class CandidUI extends HTMLElement {
         </style>
         <slot name="styles"></slot>
         <div id="progress">
-          <progress class="ic_progress" id="ic-progress">Loading Candid UI...</progress>
+          <progress class="ic_progress" id="ic-progress">
+            Loading Candid UI...
+          </progress>
         </div>
         <section id="app" style="display: none">
           <header id="header">
@@ -543,13 +611,33 @@ export class CandidUI extends HTMLElement {
             <div id="console">
               <div id="console-bar">
                 <button id="output-button">
-                  <svg viewBox="64 64 896 896" focusable="false" data-icon="clock-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-                    <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path>
-                    <path d="M686.7 638.6L544.1 535.5V288c0-4.4-3.6-8-8-8H488c-4.4 0-8 3.6-8 8v275.4c0 2.6 1.2 5 3.3 6.5l165.4 120.6c3.6 2.6 8.6 1.8 11.2-1.7l28.6-39c2.6-3.7 1.8-8.7-1.8-11.2z"></path>
+                  <svg
+                    viewBox="64 64 896 896"
+                    focusable="false"
+                    data-icon="clock-circle"
+                    width="1em"
+                    height="1em"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"
+                    ></path>
+                    <path
+                      d="M686.7 638.6L544.1 535.5V288c0-4.4-3.6-8-8-8H488c-4.4 0-8 3.6-8 8v275.4c0 2.6 1.2 5 3.3 6.5l165.4 120.6c3.6 2.6 8.6 1.8 11.2-1.7l28.6-39c2.6-3.7 1.8-8.7-1.8-11.2z"
+                    ></path>
                   </svg>
                 </button>
                 <button id="methods-button">
-                  <svg viewBox="64 64 896 896" focusable="false" data-icon="unordered-list" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+                  <svg
+                    viewBox="64 64 896 896"
+                    focusable="false"
+                    data-icon="unordered-list"
+                    width="1em"
+                    height="1em"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
                     <path
                       d="M912 192H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 284H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 284H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM104 228a56 56 0 10112 0 56 56 0 10-112 0zm0 284a56 56 0 10112 0 56 56 0 10-112 0zm0 284a56 56 0 10112 0 56 56 0 10-112 0z"
                     ></path>
@@ -582,7 +670,8 @@ export class CandidUI extends HTMLElement {
       agent: this.#agent,
       canisterId,
     });
-    const candid_source = (await actor.__get_candid_interface_tmp_hack()) as string;
+    const candid_source =
+      (await actor.__get_candid_interface_tmp_hack()) as string;
     this.#log(candid_source);
     return candid_source;
   };
@@ -595,7 +684,9 @@ export class CandidUI extends HTMLElement {
         did_to_js: IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], ["query"]),
       });
 
-    const candidCanister = this.#isLocal ? `ryjl3-tyaaa-aaaaa-aaaba-cai` : `a4gq6-oaaaa-aaaab-qaa4q-cai`;
+    const candidCanister = this.#isLocal
+      ? `ryjl3-tyaaa-aaaaa-aaaba-cai`
+      : `a4gq6-oaaaa-aaaab-qaa4q-cai`;
 
     this.#log(`candidCanister: ${candidCanister}`);
     const didjs: ActorSubclass = Actor.createActor(didjs_interface, {
@@ -611,13 +702,25 @@ export class CandidUI extends HTMLElement {
 
   #initializeConsoleControls() {
     this.#log("initializing console controls");
-    const consoleEl = this.shadowRoot?.getElementById("console") as HTMLDivElement;
-    const outputButton = this.shadowRoot?.getElementById("output-button") as HTMLButtonElement;
-    const methodsButton = this.shadowRoot?.getElementById("methods-button") as HTMLButtonElement;
-    const resetButton = this.shadowRoot?.getElementById("reset-button") as HTMLButtonElement;
+    const consoleEl = this.shadowRoot?.getElementById(
+      "console"
+    ) as HTMLDivElement;
+    const outputButton = this.shadowRoot?.getElementById(
+      "output-button"
+    ) as HTMLButtonElement;
+    const methodsButton = this.shadowRoot?.getElementById(
+      "methods-button"
+    ) as HTMLButtonElement;
+    const resetButton = this.shadowRoot?.getElementById(
+      "reset-button"
+    ) as HTMLButtonElement;
 
-    const outputPane = this.shadowRoot?.getElementById("output-pane") as HTMLDivElement;
-    const methodsPane = this.shadowRoot?.getElementById("methods-pane") as HTMLDivElement;
+    const outputPane = this.shadowRoot?.getElementById(
+      "output-pane"
+    ) as HTMLDivElement;
+    const methodsPane = this.shadowRoot?.getElementById(
+      "methods-pane"
+    ) as HTMLDivElement;
 
     const buttons: HTMLButtonElement[] = [outputButton, methodsButton];
     const panes: HTMLDivElement[] = [outputPane, methodsPane];
@@ -626,7 +729,9 @@ export class CandidUI extends HTMLElement {
     const progress = this.shadowRoot?.getElementById("progress");
 
     // Set canister ID in the header
-    const canisterIdInput = this.shadowRoot?.querySelector("canister-input") as CanisterIdInput;
+    const canisterIdInput = this.shadowRoot?.querySelector(
+      "canister-input"
+    ) as CanisterIdInput;
 
     if (this.#canisterId) {
       canisterIdInput.setAttribute("canisterid", this.#canisterId.toText());
@@ -651,11 +756,11 @@ export class CandidUI extends HTMLElement {
       this.#log("toggling console");
       if (consoleEl.classList.contains("open")) {
         consoleEl.classList.remove("open");
-        buttons.forEach(button => {
+        buttons.forEach((button) => {
           button.classList.remove("active-tab");
           button.blur();
         });
-        panes.forEach(pane => {
+        panes.forEach((pane) => {
           pane.style.display = "none";
         });
       } else {

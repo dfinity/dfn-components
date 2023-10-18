@@ -19,14 +19,20 @@ However, the package is optimized to be used in a script tag, so we recommend us
 Example from node_modules:
 
 ```html
-<script type="module" src="./node_modules/@dfinity/candid-ui/dist/auto.js"></script>
+<script
+  type="module"
+  src="./node_modules/@dfinity/candid-ui/dist/auto.js"
+></script>
 <candid-ui canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai"></candid-ui>
 ```
 
 Example from unpkg:
 
 ```html
-<script type="module" src="https://unpkg.com/@dfinity/candid-ui/dist/auto.js"></script>
+<script
+  type="module"
+  src="https://unpkg.com/@dfinity/candid-ui/dist/auto.js"
+></script>
 <candid-ui canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai"></candid-ui>
 ```
 
@@ -92,7 +98,11 @@ The form comes with a default style, but you can override it by providing your o
 The component comes with a default `title` and `description` that can be overridden by setting attributes on the component:
 
 ```html
-<candid-ui canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai" title="My Canister" description="This is my canister interface"></candid-ui>
+<candid-ui
+  canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai"
+  title="My Canister"
+  description="This is my canister interface"
+></candid-ui>
 ```
 
 You can also provide custom title and description elements using slots:
@@ -161,7 +171,10 @@ The agent to use when connecting to the canister. If no `agent` is provided, it 
 **Example:**
 
 ```js
-candidUi.agent = new HttpAgent({ host: "http://localhost:8080", identity: myIdentity });
+candidUi.agent = new HttpAgent({
+  host: "http://localhost:8080",
+  identity: myIdentity,
+});
 ```
 
 ---

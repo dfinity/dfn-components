@@ -62,8 +62,12 @@ export class LoginButton extends HTMLElement {
   }
 
   attributeChangedCallback(attrName: string, oldVal: unknown, newVal: unknown) {
-    const button = this.shadowRoot?.querySelector("button") as HTMLButtonElement;
-    const styleSheet = this.shadowRoot?.querySelector("style") as HTMLStyleElement;
+    const button = this.shadowRoot?.querySelector(
+      "button"
+    ) as HTMLButtonElement;
+    const styleSheet = this.shadowRoot?.querySelector(
+      "style"
+    ) as HTMLStyleElement;
     switch (attrName) {
       case "disabled": {
         if (typeof newVal === "string") {
@@ -75,14 +79,19 @@ export class LoginButton extends HTMLElement {
       }
       case "logo-right": {
         if (typeof newVal === "string") {
-          styleSheet.sheet?.insertRule("button {flex-direction: row-reverse}", 0);
+          styleSheet.sheet?.insertRule(
+            "button {flex-direction: row-reverse}",
+            0
+          );
         } else {
           styleSheet.sheet?.deleteRule(0);
         }
         break;
       }
       case "label": {
-        const label = this.shadowRoot?.querySelector("#label") as HTMLSpanElement | undefined;
+        const label = this.shadowRoot?.querySelector("#label") as
+          | HTMLSpanElement
+          | undefined;
 
         if (label) {
           label.innerText = newVal as string;

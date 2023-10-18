@@ -23,7 +23,14 @@ declare global {
  * @param root  ShadowRoot
  * @param profiler  any
  */
-export function renderMethod(canister: ActorSubclass, name: string, idlFunc: IDL.FuncClass, root: ShadowRoot, profiler: any, options?: Options) {
+export function renderMethod(
+  canister: ActorSubclass,
+  name: string,
+  idlFunc: IDL.FuncClass,
+  root: ShadowRoot,
+  profiler: any,
+  options?: Options
+) {
   const { method, args } = options?.defaultValues || {};
   const defaultArgs = method == name ? args : undefined;
 
@@ -160,9 +167,12 @@ export function renderMethod(canister: ActorSubclass, name: string, idlFunc: IDL
       left.innerHTML = "";
 
       let activeDisplayType = "";
-      buttonsArray.forEach(button => {
+      buttonsArray.forEach((button) => {
         if (button.classList.contains("active")) {
-          activeDisplayType = button.classList.value.replace(/btn (.*)-btn.*/g, "$1");
+          activeDisplayType = button.classList.value.replace(
+            /btn (.*)-btn.*/g,
+            "$1"
+          );
         }
       });
       function setContainerVisibility(displayType: string) {
@@ -180,9 +190,13 @@ export function renderMethod(canister: ActorSubclass, name: string, idlFunc: IDL
       containers.push(textContainer);
       textContainer.style.display = setContainerVisibility("text");
       left.appendChild(textContainer);
-      const text = encodeStr(IDL.FuncClass.argsToString(idlFunc.retTypes, result));
+      const text = encodeStr(
+        IDL.FuncClass.argsToString(idlFunc.retTypes, result)
+      );
       textContainer.innerHTML = decodeSpace(text);
-      const showArgs = encodeStr(IDL.FuncClass.argsToString(idlFunc.argTypes, args));
+      const showArgs = encodeStr(
+        IDL.FuncClass.argsToString(idlFunc.argTypes, args)
+      );
       log(decodeSpace(`› ${name}${showArgs}`), root);
       if (profiler && !idlFunc.annotations.includes("query")) {
         await renderFlameGraph(profiler, root);
@@ -209,11 +223,13 @@ export function renderMethod(canister: ActorSubclass, name: string, idlFunc: IDL
       jsonContainer.style.display = setContainerVisibility("json");
       left.appendChild(jsonContainer);
       jsonContainer.innerText = stringify(callResult);
-    })().catch(err => {
+    })().catch((err) => {
       resultDiv.classList.add("error");
       left.innerText = err.message;
       if (profiler && !idlFunc.annotations.includes("query")) {
-        const showArgs = encodeStr(IDL.FuncClass.argsToString(idlFunc.argTypes, args));
+        const showArgs = encodeStr(
+          IDL.FuncClass.argsToString(idlFunc.argTypes, args)
+        );
         log(`[Error] ${name}${showArgs}`, root);
         renderFlameGraph(profiler, root);
       }
@@ -227,28 +243,30 @@ export function renderMethod(canister: ActorSubclass, name: string, idlFunc: IDL
   function selectResultDisplay(event: MouseEvent) {
     const target = event.target as HTMLButtonElement;
     const displayType = target.classList.value.replace(/btn (.*)-btn.*/g, "$1");
-    buttonsArray.forEach(button => button.classList.remove("active"));
-    containers.forEach(container => (container.style.display = "none"));
+    buttonsArray.forEach((button) => button.classList.remove("active"));
+    containers.forEach((container) => (container.style.display = "none"));
     target.classList.add("active");
-    (left.querySelector(`.${displayType}-result`) as HTMLDivElement).style.display = "flex";
+    (
+      left.querySelector(`.${displayType}-result`) as HTMLDivElement
+    ).style.display = "flex";
   }
-  buttonsArray.forEach(button => {
+  buttonsArray.forEach((button) => {
     button.addEventListener("click", selectResultDisplay);
     resultButtons.appendChild(button);
   });
 
   buttonRandom.addEventListener("click", () => {
-    const args = inputs.map(arg => arg.parse({ random: true }));
-    const isReject = inputs.some(arg => arg.isRejected());
+    const args = inputs.map((arg) => arg.parse({ random: true }));
+    const isReject = inputs.some((arg) => arg.isRejected());
     if (isReject) {
       return;
     }
     callAndRender(args);
   });
-  methodForm.addEventListener("submit", e => {
+  methodForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const args = inputs.map(arg => arg.parse());
-    const isReject = inputs.some(arg => arg.isRejected());
+    const args = inputs.map((arg) => arg.parse());
+    const isReject = inputs.some((arg) => arg.isRejected());
     if (isReject) {
       return;
     }
@@ -261,8 +279,8 @@ export function renderMethod(canister: ActorSubclass, name: string, idlFunc: IDL
 
     setTimeout(() => {
       attachChangeListeners();
-      const args = inputs.map(arg => arg.parse());
-      const isReject = inputs.some(arg => arg.isRejected());
+      const args = inputs.map((arg) => arg.parse());
+      const isReject = inputs.some((arg) => arg.isRejected());
       if (isReject) {
         return;
       }
@@ -297,7 +315,7 @@ function encodeStr(str: string) {
     "\n": "<br>",
   };
   const regex = new RegExp("[ <>\n]", "g");
-  return str.replace(regex, m => {
+  return str.replace(regex, (m) => {
     return escapeChars[m];
   });
 }
@@ -321,7 +339,8 @@ export function log(content: Element | string, root: ShadowRoot) {
 
   // scroll into view if line is out of view
   const { top, bottom } = line.getBoundingClientRect();
-  const { top: parentTop, bottom: parentBottom } = outputEl.getBoundingClientRect();
+  const { top: parentTop, bottom: parentBottom } =
+    outputEl.getBoundingClientRect();
   if (top < parentTop || bottom > parentBottom) {
     line.scrollIntoView();
   }
@@ -345,7 +364,9 @@ function decodeProfiling(input: Array<[number, bigint]>) {
         throw new Error("cannot pop empty stack");
       }
       if (pair[0] !== -id) {
-        throw new Error(`Exiting func ${-pair[0]}, but expect to exit func ${id}`);
+        throw new Error(
+          `Exiting func ${-pair[0]}, but expect to exit func ${id}`
+        );
       }
       const name = names[pair[0]] || `func_${pair[0]}`;
       const value = Number(cycles - pair[1]);
@@ -385,7 +406,9 @@ async function renderFlameGraph(profiler: any, root: ShadowRoot) {
     div.id = "chart";
     log(div, root);
     const chart = flamegraph().selfValue(false).sort(false).width(400);
-    const tip = tooltip.defaultFlamegraphTooltip().text((d: any) => `${d.data.name}: ${d.data.value} instrs`);
+    const tip = tooltip
+      .defaultFlamegraphTooltip()
+      .text((d: any) => `${d.data.name}: ${d.data.value} instrs`);
     chart.tooltip(tip);
     select("#chart").datum(profiling).call(chart);
     div.id = "old-chart";
@@ -396,7 +419,10 @@ function postToPlayground(id: Principal) {
   const message = {
     caller: id.toText(),
   };
-  (window.parent || window.opener)?.postMessage(`CandidUI${stringify(message)}`, "*");
+  (window.parent || window.opener)?.postMessage(
+    `CandidUI${stringify(message)}`,
+    "*"
+  );
 }
 
 function getAllHtmlInputs(methodName: string) {

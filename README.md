@@ -34,7 +34,9 @@ import "@dfinity/candid-ui/auto.js";
 ### Use
 
 ```html
-<ii-login-button></ii-login-button> <candid-ui></candid-ui>
+<ii-login-button></ii-login-button>
+
+<candid-ui></candid-ui>
 ```
 
 See the READMEs of each component for more details.
