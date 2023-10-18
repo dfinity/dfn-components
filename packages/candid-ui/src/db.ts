@@ -1,15 +1,11 @@
-import { openDB, IDBPDatabase } from 'idb';
+import { openDB, IDBPDatabase } from "idb";
 
 type Database = IDBPDatabase<unknown>;
 type IDBValidKey = string | number | Date | BufferSource | IDBValidKey[];
-const AUTH_DB_NAME = 'candid-ui-db';
-const OBJECT_STORE_NAME = 'ic-keyval';
+const AUTH_DB_NAME = "candid-ui-db";
+const OBJECT_STORE_NAME = "ic-keyval";
 
-const _openDbStore = async (
-  dbName = AUTH_DB_NAME,
-  storeName = OBJECT_STORE_NAME,
-  version: number,
-) => {
+const _openDbStore = async (dbName = AUTH_DB_NAME, storeName = OBJECT_STORE_NAME, version: number) => {
   // Clear legacy stored delegations
   return await openDB(dbName, version, {
     upgrade: database => {
@@ -22,20 +18,11 @@ const _openDbStore = async (
   });
 };
 
-async function _getValue<T>(
-  db: Database,
-  storeName: string,
-  key: IDBValidKey,
-): Promise<T | undefined> {
+async function _getValue<T>(db: Database, storeName: string, key: IDBValidKey): Promise<T | undefined> {
   return await db.get(storeName, key);
 }
 
-async function _setValue<T>(
-  db: Database,
-  storeName: string,
-  key: IDBValidKey,
-  value: T,
-): Promise<IDBValidKey> {
+async function _setValue<T>(db: Database, storeName: string, key: IDBValidKey, value: T): Promise<IDBValidKey> {
   return await db.put(storeName, value, key);
 }
 

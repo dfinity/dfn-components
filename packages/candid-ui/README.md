@@ -34,7 +34,7 @@ or like this:
 
 ```html
 <script type="module">
-  import('https://unpkg.com/@dfinity/candid-ui/dist/auto.js');
+  import("https://unpkg.com/@dfinity/candid-ui/dist/auto.js");
 </script>
 ```
 
@@ -42,7 +42,7 @@ Otherwise, you can manually initialize the component:
 
 ```html
 <script type="module">
-  import('@dfinity/candid-ui').then(({ defineElement }) => {
+  import("@dfinity/candid-ui").then(({ defineElement }) => {
     defineElement();
   });
 </script>
@@ -52,7 +52,7 @@ Otherwise, you can manually initialize the component:
 or in a script:
 
 ```js
-import { defineElement } from '@dfinity/candid-ui';
+import { defineElement } from "@dfinity/candid-ui";
 defineElement();
 ```
 
@@ -62,15 +62,15 @@ You can add an event listener to the component to be notified when the component
 
 ```html
 <script type="module">
-  import('@dfinity/candid-ui').then(({ defineElement }) => {
+  import("@dfinity/candid-ui").then(({ defineElement }) => {
     defineElement();
   });
 </script>
 <candid-ui></candid-ui>
 <script>
-  const candidUi = document.querySelector('candid-ui');
-  candidUi.addEventListener('ready', () => {
-    candidUi.canisterId = 'rrkah-fqaaa-aaaaa-aaaaq-cai';
+  const candidUi = document.querySelector("candid-ui");
+  candidUi.addEventListener("ready", () => {
+    candidUi.canisterId = "rrkah-fqaaa-aaaaa-aaaaq-cai";
   });
 </script>
 ```
@@ -92,11 +92,7 @@ The form comes with a default style, but you can override it by providing your o
 The component comes with a default `title` and `description` that can be overridden by setting attributes on the component:
 
 ```html
-<candid-ui
-  canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai"
-  title="My Canister"
-  description="This is my canister interface"
-></candid-ui>
+<candid-ui canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai" title="My Canister" description="This is my canister interface"></candid-ui>
 ```
 
 You can also provide custom title and description elements using slots:
@@ -125,7 +121,7 @@ The canister ID of the canister to interact with. If no `canisterId` is provided
 **Example:**
 
 ```js
-candidUi.canisterId = 'rrkah-fqaaa-aaaaa-aaaaq-cai';
+candidUi.canisterId = "rrkah-fqaaa-aaaaa-aaaaq-cai";
 ```
 
 ```html
@@ -145,7 +141,7 @@ The host to use when connecting to the canister. If no `host` is provided, it wi
 **Example:**
 
 ```js
-candidUi.host = 'http://localhost:8080';
+candidUi.host = "http://localhost:8080";
 ```
 
 ```html
@@ -165,7 +161,7 @@ The agent to use when connecting to the canister. If no `agent` is provided, it 
 **Example:**
 
 ```js
-candidUi.agent = new HttpAgent({ host: 'http://localhost:8080', identity: myIdentity });
+candidUi.agent = new HttpAgent({ host: "http://localhost:8080", identity: myIdentity });
 ```
 
 ---
@@ -197,7 +193,7 @@ The title to display above the form. If no `title` is provided, it will use a de
 **Example:**
 
 ```js
-candidUi.title = 'My Canister';
+candidUi.title = "My Canister";
 ```
 
 ```html
@@ -217,7 +213,7 @@ The description to display above the form. If no `description` is provided, it w
 **Example:**
 
 ```js
-candidUi.description = 'This is my canister interface';
+candidUi.description = "This is my canister interface";
 ```
 
 ```html
@@ -237,7 +233,7 @@ The methods to display in the form. If no `methods` are provided, it will automa
 **Example:**
 
 ```js
-candidUi.methods = ['greet', 'whoami'];
+candidUi.methods = ["greet", "whoami"];
 ```
 
 ```html
@@ -257,7 +253,7 @@ The log level to use when logging messages. If no `logLevel` is provided, it wil
 **Example:**
 
 ```js
-candidUi.logLevel = 'debug';
+candidUi.logLevel = "debug";
 ```
 
 ```html

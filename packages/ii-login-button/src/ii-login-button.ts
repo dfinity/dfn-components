@@ -1,9 +1,5 @@
 import { Identity } from "@dfinity/agent";
-import {
-  AuthClient,
-  AuthClientCreateOptions,
-  AuthClientLoginOptions,
-} from "@dfinity/auth-client";
+import { AuthClient, AuthClientCreateOptions, AuthClientLoginOptions } from "@dfinity/auth-client";
 import { Principal } from "@dfinity/principal";
 import { AccountIdentifier } from "@dfinity/nns";
 import { LoginButton } from "./login-button";
@@ -82,7 +78,7 @@ export class IILoginButton extends LoginButton {
 
   private init() {
     AuthClient.create(this._state.createOptions)
-      .then(async (client) => {
+      .then(async client => {
         this.setState({
           ...this._state,
           authClient: client,
@@ -97,7 +93,7 @@ export class IILoginButton extends LoginButton {
           this.render();
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         this.setState({ authClient: undefined });
       });
@@ -105,9 +101,7 @@ export class IILoginButton extends LoginButton {
 
   connectedCallback() {
     const login = this._login.bind(this);
-    this.shadowRoot
-      ?.querySelector("#ii-login-button")
-      ?.addEventListener("click", login);
+    this.shadowRoot?.querySelector("#ii-login-button")?.addEventListener("click", login);
   }
 
   setState(newState: { [Property in keyof State]+?: State[Property] }) {
@@ -127,12 +121,7 @@ export class IILoginButton extends LoginButton {
 
     const label = this.getAttribute("label") ?? "Login With Internet Identity";
     console.log(this.isAuthenticated);
-    newButton.setAttribute(
-      "aria-label",
-      `${label}. You are currently ${
-        this.isAuthenticated ? "" : "not"
-      } logged in.`
-    );
+    newButton.setAttribute("aria-label", `${label}. You are currently ${this.isAuthenticated ? "" : "not"} logged in.`);
     newButton.innerHTML = `
     <span id="logo" role="presentation">${iiLogo}</span>
     <span id="label">${label}</span>`;

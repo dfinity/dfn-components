@@ -1,13 +1,13 @@
-import { css } from './utils';
+import { css } from "./utils";
 
 export const styles = css`
   main {
-    font-family: 'Circular Std', 'Roboto', sans-serif;
+    font-family: "Circular Std", "Roboto", sans-serif;
     font-weight: 300;
     font-size: 10px;
     container-type: inline-size;
-    --font-circular: 'Circular Std', 'Roboto', sans-serif;
-    --font-mono: 'Vremena Grotesk', 'Roboto Mono', monospace;
+    --font-circular: "Circular Std", "Roboto", sans-serif;
+    --font-mono: "Vremena Grotesk", "Roboto Mono", monospace;
     --header-height: 3.8rem;
     --pad-sm: 10px;
     --pad-md: 15px;
@@ -77,13 +77,13 @@ export const styles = css`
   }
 
   #title,
-  *[slot='title'] {
+  *[slot="title"] {
     font-size: 3.4rem;
     letter-spacing: 0.1rem;
   }
 
   #methods {
-    font-family: 'Vremena Grotesk', 'Roboto Mono', monospace;
+    font-family: "Vremena Grotesk", "Roboto Mono", monospace;
     padding: 0;
     margin: 0;
   }
@@ -112,10 +112,10 @@ export const styles = css`
   input,
   select {
     font-size: var(--font-md);
-    font-family: 'Circular Std', 'Roboto', sans-serif;
+    font-family: "Circular Std", "Roboto", sans-serif;
     margin-bottom: var(--pad-lg);
   }
-  input:not([type='checkbox']),
+  input:not([type="checkbox"]),
   select {
     width: 100%;
     padding: 1.5rem;
@@ -125,15 +125,15 @@ export const styles = css`
   select {
     height: 4.8rem;
   }
-  input:not([type='checkbox']) {
+  input:not([type="checkbox"]) {
     height: 2.4rem;
   }
-  input[type='number']::-webkit-inner-spin-button {
+  input[type="number"]::-webkit-inner-spin-button {
     width: 3rem;
     height: 3rem;
   }
   label {
-    font-family: 'Circular Std', 'Roboto', sans-serif;
+    font-family: "Circular Std", "Roboto", sans-serif;
     margin-right: var(--pad-sm);
   }
   label.small {
@@ -148,7 +148,7 @@ export const styles = css`
     margin-right: 1rem;
   }
 
-  input[type='checkbox'] ~ .popup-form {
+  input[type="checkbox"] ~ .popup-form {
     padding-left: var(--pad-md);
     margin-right: 0.75rem;
   }
@@ -206,7 +206,7 @@ export const styles = css`
   }
 
   .btn {
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto", sans-serif;
     letter-spacing: 0.05rem;
     background-color: var(--darkest);
     color: var(--lightest);
@@ -403,7 +403,7 @@ export const styles = css`
     span::has(input) {
       margin-left: 0;
     }
-    input:not([type='checkbox']),
+    input:not([type="checkbox"]),
     select {
       width: 23.2rem;
       max-width: 100%;

@@ -27,15 +27,14 @@ import { defineElement as defineCandidUI } '@dfinity/candid-ui';
 You can also import the components directly from the `auto.js` file:
 
 ```js
-import '@dfinity/ii-login-button/auto.js';
-import '@dfinity/candid-ui/auto.js';
+import "@dfinity/ii-login-button/auto.js";
+import "@dfinity/candid-ui/auto.js";
 ```
 
 ### Use
 
 ```html
-<ii-login-button></ii-login-button>
-<candid-ui></candid-ui>
+<ii-login-button></ii-login-button> <candid-ui></candid-ui>
 ```
 
 See the READMEs of each component for more details.

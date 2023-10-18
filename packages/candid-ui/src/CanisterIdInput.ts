@@ -1,5 +1,5 @@
-import { Principal } from '@dfinity/principal';
-import { css, html } from './utils';
+import { Principal } from "@dfinity/principal";
+import { css, html } from "./utils";
 
 export type ChangeEvent = CustomEvent<Principal>;
 
@@ -8,9 +8,9 @@ export class CanisterIdInput extends HTMLElement {
   #error?: string;
   constructor() {
     super();
-    const shadow = this.attachShadow({ mode: 'open' });
+    const shadow = this.attachShadow({ mode: "open" });
 
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.innerHTML = css`
       label {
         margin-right: 0.5rem;
@@ -19,16 +19,16 @@ export class CanisterIdInput extends HTMLElement {
         border: none;
         width: 12rem;
       }
-      button[type='submit'] {
+      button[type="submit"] {
         display: none;
         padding: 0 1rem;
       }
-      form:focus-within button[type='submit'] {
+      form:focus-within button[type="submit"] {
         display: inline;
         margin-left: 1rem;
       }
       .btn {
-        font-family: 'Roboto', sans-serif;
+        font-family: "Roboto", sans-serif;
         letter-spacing: 0.05rem;
         background-color: var(--darkest);
         color: var(--lightest);
@@ -60,8 +60,8 @@ export class CanisterIdInput extends HTMLElement {
     `;
     shadow.appendChild(style);
 
-    const form = document.createElement('form');
-    form.id = 'form';
+    const form = document.createElement("form");
+    form.id = "form";
     shadow.appendChild(form);
 
     const handleSubmit = this.#handleSubmit.bind(this);
@@ -87,7 +87,7 @@ export class CanisterIdInput extends HTMLElement {
   }
 
   async #init() {
-    const value = this.getAttribute('canisterId');
+    const value = this.getAttribute("canisterId");
     if (value) {
       try {
         this.#canisterId = Principal.fromText(value);
@@ -100,17 +100,17 @@ export class CanisterIdInput extends HTMLElement {
   }
 
   #handleSubmit = (event: Event) => {
-    console.count('handleSubmit');
+    console.count("handleSubmit");
     event.preventDefault();
     const shadowRoot = this.shadowRoot;
     if (!shadowRoot) return;
-    const form = shadowRoot.querySelector('form') as HTMLFormElement;
+    const form = shadowRoot.querySelector("form") as HTMLFormElement;
 
-    const input = form.querySelector('input') as HTMLInputElement;
+    const input = form.querySelector("input") as HTMLInputElement;
     try {
       const canisterId = Principal.fromText(input.value);
       this.#error = undefined;
-      const event = new CustomEvent('change', {
+      const event = new CustomEvent("change", {
         detail: {
           canisterId,
         },
@@ -127,10 +127,9 @@ export class CanisterIdInput extends HTMLElement {
   async #render() {
     const shadowRoot = this.shadowRoot;
     if (!shadowRoot) return;
-    const form = shadowRoot.querySelector('form') as HTMLFormElement;
-    form.innerHTML = html` <label for="canister">Canister Id:</label
-      ><input id="canister" name="canister" /><button type="submit" class="btn">Set</button>`;
-    const input = form.querySelector('input') as HTMLInputElement;
+    const form = shadowRoot.querySelector("form") as HTMLFormElement;
+    form.innerHTML = html` <label for="canister">Canister Id:</label><input id="canister" name="canister" /><button type="submit" class="btn">Set</button>`;
+    const input = form.querySelector("input") as HTMLInputElement;
     if (this.#canisterId) {
       input.value = this.#canisterId.toText();
     } else {
@@ -139,13 +138,13 @@ export class CanisterIdInput extends HTMLElement {
       }, 100);
     }
 
-    input.addEventListener('change', () => {
+    input.addEventListener("change", () => {
       try {
         // will throw an error if input is invalid
         Principal.fromText(input.value);
-        input.setCustomValidity('');
+        input.setCustomValidity("");
       } catch (error) {
-        input.setCustomValidity('Please enter a valid canister ID.');
+        input.setCustomValidity("Please enter a valid canister ID.");
       }
     });
   }
@@ -155,7 +154,7 @@ export class CanisterIdInput extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['canisterid', 'onchange'];
+    return ["canisterid", "onchange"];
   }
 }
 
@@ -163,7 +162,7 @@ export class CanisterIdInput extends HTMLElement {
  * Defines the canister-input custom element.
  */
 export function defineCanisterIdInput() {
-  if (!window.customElements.get('canister-input')) {
-    customElements.define('canister-input', CanisterIdInput);
+  if (!window.customElements.get("canister-input")) {
+    customElements.define("canister-input", CanisterIdInput);
   }
 }

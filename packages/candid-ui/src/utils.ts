@@ -18,12 +18,7 @@ export function html(strings: TemplateStringsArray, ...values: unknown[]) {
 }
 
 function escapeHtml(unsafe: unknown) {
-  return String(unsafe)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
 /**
@@ -43,5 +38,4 @@ export function css(strings: TemplateStringsArray, ...values: unknown[]) {
   return result;
 }
 
-export const stringify = (x: unknown) =>
-  JSON.stringify(x, (_, v) => (typeof v === "bigint" ? v.toString() : v));
+export const stringify = (x: unknown) => JSON.stringify(x, (_, v) => (typeof v === "bigint" ? v.toString() : v));
