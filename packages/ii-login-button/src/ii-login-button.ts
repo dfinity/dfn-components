@@ -131,7 +131,7 @@ export class IILoginButton extends LoginButton {
       "aria-label",
       `${label}. You are currently ${
         this.isAuthenticated ? "" : "not"
-      } logged in.`
+      } logged in.`,
     );
     newButton.innerHTML = `
     <span id="logo" role="presentation">${iiLogo}</span>

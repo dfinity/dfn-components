@@ -13,19 +13,19 @@ export const inputBox = (t: IDL.Type, config: Partial<UI.UIConfig>) => {
 };
 export const recordForm = (
   fields: Array<[string, IDL.Type]>,
-  config: Partial<UI.FormConfig>
+  config: Partial<UI.FormConfig>,
 ) => {
   return new UI.RecordForm(fields, { ...FormConfig, ...config });
 };
 export const tupleForm = (
   components: IDL.Type[],
-  config: Partial<UI.FormConfig>
+  config: Partial<UI.FormConfig>,
 ) => {
   return new UI.TupleForm(components, { ...FormConfig, ...config });
 };
 export const variantForm = (
   fields: Array<[string, IDL.Type]>,
-  config: Partial<UI.FormConfig>
+  config: Partial<UI.FormConfig>,
 ) => {
   return new UI.VariantForm(fields, { ...FormConfig, ...config });
 };
@@ -55,7 +55,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
   public visitRecord(
     t: IDL.RecordClass,
     fields: Array<[string, IDL.Type]>,
-    d: null
+    d: null,
   ): InputBox {
     let config = {};
     if (fields.length > 1) {
@@ -73,7 +73,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
   public visitTuple<T extends any[]>(
     t: IDL.TupleClass<T>,
     components: IDL.Type[],
-    d: null
+    d: null,
   ): InputBox {
     let config = {};
     if (components.length > 1) {
@@ -89,7 +89,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
   public visitVariant(
     t: IDL.VariantClass,
     fields: Array<[string, IDL.Type]>,
-    d: null
+    d: null,
   ): InputBox {
     const select = document.createElement("select");
     for (const [key, type] of fields) {
@@ -112,7 +112,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
       const [selectedVariantKey] = Object.keys(this.#defaultValue);
       if (selectedVariantKey) {
         const index = fields.findIndex(
-          ([fieldKey]) => fieldKey == selectedVariantKey
+          ([fieldKey]) => fieldKey == selectedVariantKey,
         );
         if (!isNaN(index)) {
           uiConfig.form.open.selectedIndex = index;
@@ -167,7 +167,7 @@ export class Render extends IDL.Visitor<null, InputBox> {
   public visitRec<T>(
     t: IDL.RecClass<T>,
     ty: IDL.ConstructType<T>,
-    d: null
+    d: null,
   ): InputBox {
     return renderInput(ty, this.#defaultValue);
   }
@@ -311,7 +311,7 @@ class RenderValue extends IDL.Visitor<ValueConfig, void> {
   public visitRec<T>(
     t: IDL.RecClass<T>,
     ty: IDL.ConstructType<T>,
-    d: ValueConfig
+    d: ValueConfig,
   ) {
     renderValue(ty, d.input, d.value);
   }
@@ -329,7 +329,7 @@ class RenderValue extends IDL.Visitor<ValueConfig, void> {
   public visitRecord(
     t: IDL.RecordClass,
     fields: Array<[string, IDL.Type]>,
-    d: ValueConfig
+    d: ValueConfig,
   ) {
     const form = d.input.ui.form!;
     fields.forEach(([key, type], i) => {
@@ -339,7 +339,7 @@ class RenderValue extends IDL.Visitor<ValueConfig, void> {
   public visitTuple<T extends any[]>(
     t: IDL.TupleClass<T>,
     components: IDL.Type[],
-    d: ValueConfig
+    d: ValueConfig,
   ) {
     const form = d.input.ui.form!;
     components.forEach((type, i) => {
@@ -349,7 +349,7 @@ class RenderValue extends IDL.Visitor<ValueConfig, void> {
   public visitVariant(
     t: IDL.VariantClass,
     fields: Array<[string, IDL.Type]>,
-    d: ValueConfig
+    d: ValueConfig,
   ) {
     const form = d.input.ui.form!;
     const selected = Object.entries(d.value)[0];

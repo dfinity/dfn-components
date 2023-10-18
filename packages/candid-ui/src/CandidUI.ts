@@ -297,7 +297,7 @@ export class CandidUI extends HTMLElement {
   async connectedCallback() {
     await this.#init();
     const slot = this.shadowRoot?.querySelector(
-      'slot[name="styles"]'
+      'slot[name="styles"]',
     ) as HTMLSlotElement;
 
     if (slot) {
@@ -464,7 +464,7 @@ export class CandidUI extends HTMLElement {
 
     if (!this.#canisterId) return;
     let candid = await this.#db?.get(
-      stringify({ id: this.#canisterId.toText(), network: this.#host })
+      stringify({ id: this.#canisterId.toText(), network: this.#host }),
     );
 
     //   fetch the candid file
@@ -489,7 +489,7 @@ export class CandidUI extends HTMLElement {
       if (this.#db) {
         this.#db.set(
           stringify({ id: this.#canisterId.toText(), network: this.#host }),
-          candid
+          candid,
         );
       }
 
@@ -506,7 +506,7 @@ export class CandidUI extends HTMLElement {
         canisterId: this.#canisterId,
       });
       const sortedMethods = Actor.interfaceOf(actor)._fields.sort(([a], [b]) =>
-        a > b ? 1 : -1
+        a > b ? 1 : -1,
       );
 
       const shadowRoot = this.shadowRoot!;
@@ -516,7 +516,7 @@ export class CandidUI extends HTMLElement {
       //  if methods are specified, only render those
       if (this.#methods?.length) {
         const methods = sortedMethods.filter(([name]) =>
-          this.#methods.includes(name)
+          this.#methods.includes(name),
         );
         // sort methods by this.#methods
         methods.sort(([a], [b]) => {
@@ -532,7 +532,7 @@ export class CandidUI extends HTMLElement {
             func,
             shadowRoot,
             async () => undefined,
-            this.#options
+            this.#options,
           );
         }
         return;
@@ -546,7 +546,7 @@ export class CandidUI extends HTMLElement {
             func,
             shadowRoot,
             async () => undefined,
-            this.#options
+            this.#options,
           );
         }
       }
@@ -703,23 +703,23 @@ export class CandidUI extends HTMLElement {
   #initializeConsoleControls() {
     this.#log("initializing console controls");
     const consoleEl = this.shadowRoot?.getElementById(
-      "console"
+      "console",
     ) as HTMLDivElement;
     const outputButton = this.shadowRoot?.getElementById(
-      "output-button"
+      "output-button",
     ) as HTMLButtonElement;
     const methodsButton = this.shadowRoot?.getElementById(
-      "methods-button"
+      "methods-button",
     ) as HTMLButtonElement;
     const resetButton = this.shadowRoot?.getElementById(
-      "reset-button"
+      "reset-button",
     ) as HTMLButtonElement;
 
     const outputPane = this.shadowRoot?.getElementById(
-      "output-pane"
+      "output-pane",
     ) as HTMLDivElement;
     const methodsPane = this.shadowRoot?.getElementById(
-      "methods-pane"
+      "methods-pane",
     ) as HTMLDivElement;
 
     const buttons: HTMLButtonElement[] = [outputButton, methodsButton];
@@ -730,7 +730,7 @@ export class CandidUI extends HTMLElement {
 
     // Set canister ID in the header
     const canisterIdInput = this.shadowRoot?.querySelector(
-      "canister-input"
+      "canister-input",
     ) as CanisterIdInput;
 
     if (this.#canisterId) {

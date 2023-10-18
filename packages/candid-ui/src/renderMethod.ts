@@ -29,7 +29,7 @@ export function renderMethod(
   idlFunc: IDL.FuncClass,
   root: ShadowRoot,
   profiler: any,
-  options?: Options
+  options?: Options,
 ) {
   const { method, args } = options?.defaultValues || {};
   const defaultArgs = method == name ? args : undefined;
@@ -171,7 +171,7 @@ export function renderMethod(
         if (button.classList.contains("active")) {
           activeDisplayType = button.classList.value.replace(
             /btn (.*)-btn.*/g,
-            "$1"
+            "$1",
           );
         }
       });
@@ -191,11 +191,11 @@ export function renderMethod(
       textContainer.style.display = setContainerVisibility("text");
       left.appendChild(textContainer);
       const text = encodeStr(
-        IDL.FuncClass.argsToString(idlFunc.retTypes, result)
+        IDL.FuncClass.argsToString(idlFunc.retTypes, result),
       );
       textContainer.innerHTML = decodeSpace(text);
       const showArgs = encodeStr(
-        IDL.FuncClass.argsToString(idlFunc.argTypes, args)
+        IDL.FuncClass.argsToString(idlFunc.argTypes, args),
       );
       log(decodeSpace(`› ${name}${showArgs}`), root);
       if (profiler && !idlFunc.annotations.includes("query")) {
@@ -228,7 +228,7 @@ export function renderMethod(
       left.innerText = err.message;
       if (profiler && !idlFunc.annotations.includes("query")) {
         const showArgs = encodeStr(
-          IDL.FuncClass.argsToString(idlFunc.argTypes, args)
+          IDL.FuncClass.argsToString(idlFunc.argTypes, args),
         );
         log(`[Error] ${name}${showArgs}`, root);
         renderFlameGraph(profiler, root);
@@ -365,7 +365,7 @@ function decodeProfiling(input: Array<[number, bigint]>) {
       }
       if (pair[0] !== -id) {
         throw new Error(
-          `Exiting func ${-pair[0]}, but expect to exit func ${id}`
+          `Exiting func ${-pair[0]}, but expect to exit func ${id}`,
         );
       }
       const name = names[pair[0]] || `func_${pair[0]}`;
@@ -421,7 +421,7 @@ function postToPlayground(id: Principal) {
   };
   (window.parent || window.opener)?.postMessage(
     `CandidUI${stringify(message)}`,
-    "*"
+    "*",
   );
 }
 
