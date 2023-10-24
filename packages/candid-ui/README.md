@@ -19,14 +19,20 @@ However, the package is optimized to be used in a script tag, so we recommend us
 Example from node_modules:
 
 ```html
-<script type="module" src="./node_modules/@dfinity/candid-ui/dist/auto.js"></script>
+<script
+  type="module"
+  src="./node_modules/@dfinity/candid-ui/dist/auto.js"
+></script>
 <candid-ui canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai"></candid-ui>
 ```
 
 Example from unpkg:
 
 ```html
-<script type="module" src="https://unpkg.com/@dfinity/candid-ui/dist/auto.js"></script>
+<script
+  type="module"
+  src="https://unpkg.com/@dfinity/candid-ui/dist/auto.js"
+></script>
 <candid-ui canisterId="rrkah-fqaaa-aaaaa-aaaaq-cai"></candid-ui>
 ```
 
@@ -34,7 +40,7 @@ or like this:
 
 ```html
 <script type="module">
-  import('https://unpkg.com/@dfinity/candid-ui/dist/auto.js');
+  import("https://unpkg.com/@dfinity/candid-ui/dist/auto.js");
 </script>
 ```
 
@@ -42,7 +48,7 @@ Otherwise, you can manually initialize the component:
 
 ```html
 <script type="module">
-  import('@dfinity/candid-ui').then(({ defineElement }) => {
+  import("@dfinity/candid-ui").then(({ defineElement }) => {
     defineElement();
   });
 </script>
@@ -52,7 +58,7 @@ Otherwise, you can manually initialize the component:
 or in a script:
 
 ```js
-import { defineElement } from '@dfinity/candid-ui';
+import { defineElement } from "@dfinity/candid-ui";
 defineElement();
 ```
 
@@ -62,15 +68,15 @@ You can add an event listener to the component to be notified when the component
 
 ```html
 <script type="module">
-  import('@dfinity/candid-ui').then(({ defineElement }) => {
+  import("@dfinity/candid-ui").then(({ defineElement }) => {
     defineElement();
   });
 </script>
 <candid-ui></candid-ui>
 <script>
-  const candidUi = document.querySelector('candid-ui');
-  candidUi.addEventListener('ready', () => {
-    candidUi.canisterId = 'rrkah-fqaaa-aaaaa-aaaaq-cai';
+  const candidUi = document.querySelector("candid-ui");
+  candidUi.addEventListener("ready", () => {
+    candidUi.canisterId = "rrkah-fqaaa-aaaaa-aaaaq-cai";
   });
 </script>
 ```
@@ -125,7 +131,7 @@ The canister ID of the canister to interact with. If no `canisterId` is provided
 **Example:**
 
 ```js
-candidUi.canisterId = 'rrkah-fqaaa-aaaaa-aaaaq-cai';
+candidUi.canisterId = "rrkah-fqaaa-aaaaa-aaaaq-cai";
 ```
 
 ```html
@@ -145,7 +151,7 @@ The host to use when connecting to the canister. If no `host` is provided, it wi
 **Example:**
 
 ```js
-candidUi.host = 'http://localhost:8080';
+candidUi.host = "http://localhost:8080";
 ```
 
 ```html
@@ -165,7 +171,10 @@ The agent to use when connecting to the canister. If no `agent` is provided, it 
 **Example:**
 
 ```js
-candidUi.agent = new HttpAgent({ host: 'http://localhost:8080', identity: myIdentity });
+candidUi.agent = new HttpAgent({
+  host: "http://localhost:8080",
+  identity: myIdentity,
+});
 ```
 
 ---
@@ -197,7 +206,7 @@ The title to display above the form. If no `title` is provided, it will use a de
 **Example:**
 
 ```js
-candidUi.title = 'My Canister';
+candidUi.title = "My Canister";
 ```
 
 ```html
@@ -217,7 +226,7 @@ The description to display above the form. If no `description` is provided, it w
 **Example:**
 
 ```js
-candidUi.description = 'This is my canister interface';
+candidUi.description = "This is my canister interface";
 ```
 
 ```html
@@ -237,7 +246,7 @@ The methods to display in the form. If no `methods` are provided, it will automa
 **Example:**
 
 ```js
-candidUi.methods = ['greet', 'whoami'];
+candidUi.methods = ["greet", "whoami"];
 ```
 
 ```html
@@ -257,7 +266,7 @@ The log level to use when logging messages. If no `logLevel` is provided, it wil
 **Example:**
 
 ```js
-candidUi.logLevel = 'debug';
+candidUi.logLevel = "debug";
 ```
 
 ```html

@@ -15,7 +15,7 @@ The simplest way to use this component is to import the `auto.js` file in your a
 In Javascript, you can import the component and its types with
 
 ```js
-import {IILoginButton, defineComponent} from '@dfinity/ii-login-button';
+import { IILoginButton, defineComponent } from "@dfinity/ii-login-button";
 defineComponent();
 ```
 
@@ -63,10 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Do something after login
   });
 });
-
 ```
-
-
 
 ### Supported attributes
 
