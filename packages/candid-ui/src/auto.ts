@@ -1,3 +1,3 @@
-import('./CandidUI').then(({ defineElement }) => {
+import("./CandidUI").then(({ defineElement }) => {
   defineElement();
 });
