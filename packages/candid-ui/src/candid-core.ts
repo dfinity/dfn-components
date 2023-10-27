@@ -29,7 +29,10 @@ export class InputBox {
   public label: string | null = null;
   public value: any = undefined;
 
-  constructor(public idl: IDL.Type, public ui: UIConfig) {
+  constructor(
+    public idl: IDL.Type,
+    public ui: UIConfig,
+  ) {
     const status = document.createElement("span");
     status.className = "status";
     this.status = status;
@@ -64,7 +67,7 @@ export class InputBox {
         const value = this.ui.parse(this.idl, config, input.value);
         if (!this.idl.covariant(value)) {
           throw new Error(
-            `${input.value} is not of type ${this.idl.display()}`
+            `${input.value} is not of type ${this.idl.display()}`,
           );
         }
         this.status.style.display = "none";
@@ -158,7 +161,10 @@ export abstract class InputForm {
 }
 
 export class RecordForm extends InputForm {
-  constructor(public fields: Array<[string, IDL.Type]>, public ui: FormConfig) {
+  constructor(
+    public fields: Array<[string, IDL.Type]>,
+    public ui: FormConfig,
+  ) {
     super(ui);
   }
   public generateForm(): void {
@@ -191,7 +197,10 @@ export class RecordForm extends InputForm {
 }
 
 export class TupleForm extends InputForm {
-  constructor(public components: IDL.Type[], public ui: FormConfig) {
+  constructor(
+    public components: IDL.Type[],
+    public ui: FormConfig,
+  ) {
     super(ui);
   }
   public generateForm(): void {
@@ -215,7 +224,10 @@ export class TupleForm extends InputForm {
 }
 
 export class VariantForm extends InputForm {
-  constructor(public fields: Array<[string, IDL.Type]>, public ui: FormConfig) {
+  constructor(
+    public fields: Array<[string, IDL.Type]>,
+    public ui: FormConfig,
+  ) {
     super(ui);
   }
   public generateForm(): void {
@@ -238,7 +250,10 @@ export class VariantForm extends InputForm {
 }
 
 export class OptionForm extends InputForm {
-  constructor(public ty: IDL.Type, public ui: FormConfig) {
+  constructor(
+    public ty: IDL.Type,
+    public ui: FormConfig,
+  ) {
     super(ui);
   }
   public generateForm(): void {
@@ -264,7 +279,10 @@ export class OptionForm extends InputForm {
 }
 
 export class VecForm extends InputForm {
-  constructor(public ty: IDL.Type, public ui: FormConfig) {
+  constructor(
+    public ty: IDL.Type,
+    public ui: FormConfig,
+  ) {
     super(ui);
   }
   public generateForm(): void {

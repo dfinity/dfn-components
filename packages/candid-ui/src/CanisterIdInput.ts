@@ -55,7 +55,10 @@ export class CanisterIdInput extends HTMLElement {
       select:focus,
       textarea:focus {
         outline: 2px transparent solid;
-        box-shadow: 0 0 0 2px #f9f9d1, 0 0 0 4px #396196, 0 0 4px 8px #f9f9d1;
+        box-shadow:
+          0 0 0 2px #f9f9d1,
+          0 0 0 4px #396196,
+          0 0 4px 8px #f9f9d1;
       }
     `;
     shadow.appendChild(style);

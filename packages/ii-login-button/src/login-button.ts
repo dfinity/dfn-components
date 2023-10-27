@@ -63,10 +63,10 @@ export class LoginButton extends HTMLElement {
 
   attributeChangedCallback(attrName: string, oldVal: unknown, newVal: unknown) {
     const button = this.shadowRoot?.querySelector(
-      "button"
+      "button",
     ) as HTMLButtonElement;
     const styleSheet = this.shadowRoot?.querySelector(
-      "style"
+      "style",
     ) as HTMLStyleElement;
     switch (attrName) {
       case "disabled": {
@@ -81,7 +81,7 @@ export class LoginButton extends HTMLElement {
         if (typeof newVal === "string") {
           styleSheet.sheet?.insertRule(
             "button {flex-direction: row-reverse}",
-            0
+            0,
           );
         } else {
           styleSheet.sheet?.deleteRule(0);

@@ -8,7 +8,7 @@ const OBJECT_STORE_NAME = "ic-keyval";
 const _openDbStore = async (
   dbName = AUTH_DB_NAME,
   storeName = OBJECT_STORE_NAME,
-  version: number
+  version: number,
 ) => {
   // Clear legacy stored delegations
   return await openDB(dbName, version, {
@@ -25,7 +25,7 @@ const _openDbStore = async (
 async function _getValue<T>(
   db: Database,
   storeName: string,
-  key: IDBValidKey
+  key: IDBValidKey,
 ): Promise<T | undefined> {
   return await db.get(storeName, key);
 }
@@ -34,7 +34,7 @@ async function _setValue<T>(
   db: Database,
   storeName: string,
   key: IDBValidKey,
-  value: T
+  value: T,
 ): Promise<IDBValidKey> {
   return await db.put(storeName, value, key);
 }
@@ -42,7 +42,7 @@ async function _setValue<T>(
 async function _removeValue(
   db: Database,
   storeName: string,
-  key: IDBValidKey
+  key: IDBValidKey,
 ): Promise<void> {
   return await db.delete(storeName, key);
 }
@@ -69,7 +69,7 @@ export class IdbNetworkIds {
    * @constructs an {@link IdbKeyVal}
    */
   public static async create(
-    options?: DBCreateOptions
+    options?: DBCreateOptions,
   ): Promise<IdbNetworkIds> {
     const {
       dbName = AUTH_DB_NAME,
@@ -81,7 +81,10 @@ export class IdbNetworkIds {
   }
 
   // Do not use - instead prefer create
-  private constructor(private _db: Database, private _storeName: string) {}
+  private constructor(
+    private _db: Database,
+    private _storeName: string,
+  ) {}
 
   /**
    * Basic setter
